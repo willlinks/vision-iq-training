@@ -1,0 +1,435 @@
+:root {
+  --grey: #808080;
+  --bg: #101014;
+  --fg: #e8e8ea;
+  --accent: #6ea8fe;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  overscroll-behavior: none;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #26262c;
+  align-items: center;
+}
+
+/* Title absorbs all slack and truncates, so a longer/shorter translation never
+   pushes the buttons around. */
+.topbar h1 {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+  margin: 0;
+  font-weight: 600;
+  opacity: 0.7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Fixed-size control boxes: "EN" / "日本語" / "Home" / "ホーム" all occupy the
+   same footprint regardless of language. */
+.topbar-btn {
+  flex-shrink: 0;
+  min-width: 4rem;
+  padding: 8px 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+button {
+  font: inherit;
+  color: var(--fg);
+  background: #1c1c22;
+  border: 1px solid #33333c;
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+button.primary {
+  background: var(--accent);
+  color: #08131f;
+  border-color: transparent;
+  font-weight: 600;
+}
+
+button[aria-pressed="true"] {
+  border-color: var(--accent);
+}
+
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 24px;
+  text-align: center;
+}
+
+/* Uniform button width so EN/JA label differences don't reflow the column. */
+.screen > button {
+  min-width: min(15rem, 78vw);
+}
+
+/* Result screens can be taller than the viewport. */
+.screen.scroll {
+  justify-content: flex-start;
+  overflow-y: auto;
+  gap: 14px;
+}
+
+.screen-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(20rem, 86vw);
+  margin-top: 4px;
+}
+
+.screen-actions button {
+  width: 100%;
+  min-width: 0;
+}
+
+.muted {
+  opacity: 0.65;
+  max-width: 34ch;
+}
+
+/* ---- Reusable result panel (score + gauge + explanations + tips) ---- */
+.result-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: min(30rem, 92vw);
+  text-align: center;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.metric-name {
+  font-size: 13px;
+}
+
+.metric-meaning {
+  font-size: 14px;
+  opacity: 0.82;
+  max-width: 32ch;
+}
+
+.result-note {
+  font-size: 12.5px;
+  margin: 0;
+}
+
+.scale {
+  width: min(22rem, 88vw);
+  margin: 22px auto 0;
+}
+
+.scale-track {
+  position: relative;
+  height: 8px;
+  border-radius: 4px;
+  background: #2b2b33;
+  overflow: visible;
+}
+
+.scale-you {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--fg);
+}
+
+.scale-typical {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: rgba(110, 168, 254, 0.32);
+  border-radius: 4px;
+}
+
+.scale-marker {
+  position: absolute;
+  top: -4px;
+  width: 3px;
+  height: 16px;
+  background: var(--fg);
+  border-radius: 1.5px;
+  transform: translateX(-1.5px);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.55);
+}
+
+.scale-ends {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 12px;
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+}
+
+.scale-legend {
+  margin-top: 7px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.scale-legend .sw {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 4px;
+  vertical-align: -1px;
+}
+
+.sw-typical {
+  background: rgba(110, 168, 254, 0.5);
+}
+
+.disclosure {
+  width: 100%;
+  border: 1px solid #2a2a31;
+  border-radius: 12px;
+  background: #16161b;
+  text-align: left;
+  overflow: hidden;
+}
+
+.disclosure summary {
+  padding: 12px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  list-style: none;
+}
+
+.disclosure summary::-webkit-details-marker {
+  display: none;
+}
+
+.disclosure summary::after {
+  content: "+";
+  float: right;
+  opacity: 0.6;
+}
+
+.disclosure[open] summary::after {
+  content: "\2212";
+}
+
+.disclosure-body {
+  padding: 0 14px 14px;
+}
+
+.about-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13.5px;
+  opacity: 0.85;
+}
+
+.tip-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tip-card {
+  border: 1px solid #2a2a31;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #101014;
+}
+
+.tip-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 3px;
+}
+
+.tip-body {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.8;
+  line-height: 1.45;
+}
+
+/* Vision task stage: uniform mid-grey, fills the viewport. Nothing here changes
+   appearance between trials except the grating inside a marker ring. */
+.stage {
+  flex: 1;
+  align-self: stretch;
+  position: relative;
+  background: var(--grey);
+  overflow: hidden;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+/* Constant marker rings. The canvas inside always paints (contrast 0 = invisible
+   mid-grey), so the ring never flashes or resizes when the patch appears. */
+.slot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.slot canvas {
+  display: block;
+}
+
+.slot-left {
+  left: 28%;
+}
+
+.slot-right {
+  left: 72%;
+}
+
+/* Full-height transparent tap targets, one per side. */
+.tapzone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  border-radius: 0;
+  z-index: 2;
+}
+
+.tapzone:active {
+  transform: none;
+}
+
+.tapzone:disabled {
+  cursor: default;
+}
+
+.tapzone-left {
+  left: 0;
+}
+
+.tapzone-right {
+  right: 0;
+}
+
+.fixation {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: #5a5a5a;
+  font-size: 26px;
+  font-weight: 700;
+  z-index: 1;
+}
+
+/* "Not sure" — above the tap zones, constant position, dimmed until it is live. */
+.unsure-btn {
+  position: absolute;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 4;
+  padding: 8px 18px;
+  background: rgba(20, 20, 26, 0.55);
+  border-color: rgba(255, 255, 255, 0.18);
+  transition: opacity 0.15s;
+}
+
+.unsure-btn:active {
+  transform: translateX(-50%);
+}
+
+.unsure-btn:disabled {
+  opacity: 0.35;
+}
+
+.hud {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  font-size: 13px;
+  color: #3a3a3a;
+  pointer-events: none;
+}
+
+.result-num {
+  font-size: 40px;
+  font-weight: 700;
+}
+
+.slider-row {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr 3.5rem;
+  gap: 10px;
+  align-items: center;
+  width: min(460px, 92vw);
+}
+
+.slider-row label {
+  text-align: left;
+  opacity: 0.8;
+  overflow-wrap: anywhere;
+}
+
+.slider-row output {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+}
