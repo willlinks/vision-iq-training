@@ -33,7 +33,7 @@ export const en = {
   "result.aboutTitle": "What this means",
   "result.improveTitle": "How to improve",
   "result.you": "You",
-  "result.typical": "Typical (normal vision)",
+  "result.typical": "Typical range",
 
   "cres.sensitivityName": "Contrast sensitivity",
   "cres.thresholdName": "Contrast threshold",
@@ -65,11 +65,11 @@ export const en = {
     "A real decline can mean dry eye or cataract. Worth a check.",
 
   "lab.heading": "Gabor lab",
-  "lab.orientation": "orientation°",
+  "lab.orientation": "orientation",
   "lab.wavelength": "wavelength",
-  "lab.sigma": "gaussian σ",
+  "lab.sigma": "gaussian width",
   "lab.aspect": "aspect",
-  "lab.phase": "phase°",
+  "lab.phase": "phase",
   "lab.contrast": "contrast",
 } as const;
 

@@ -35,7 +35,7 @@ export const ja: Record<StringKey, string> = {
   "result.aboutTitle": "この数値について",
   "result.improveTitle": "伸ばすには",
   "result.you": "あなた",
-  "result.typical": "一般的な範囲（通常の見え方）",
+  "result.typical": "通常の見え方",
 
   "cres.sensitivityName": "コントラスト感度",
   "cres.thresholdName": "コントラスト閾値",
@@ -70,10 +70,10 @@ export const ja: Record<StringKey, string> = {
     "はっきりした低下はドライアイや白内障のこともあります。念のため受診を。",
 
   "lab.heading": "ガボール ラボ",
-  "lab.orientation": "傾き°",
+  "lab.orientation": "傾き",
   "lab.wavelength": "波長",
-  "lab.sigma": "ガウス幅 σ",
+  "lab.sigma": "ガウス幅",
   "lab.aspect": "縦横比",
-  "lab.phase": "位相°",
+  "lab.phase": "位相",
   "lab.contrast": "コントラスト",
 };

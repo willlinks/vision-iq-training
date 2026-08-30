@@ -57,7 +57,10 @@ function Scale({
       </div>
       {spec.typical && (
         <div className="scale-legend muted">
-          <i className="sw sw-typical" /> {typicalLabel} ({spec.typical.label})
+          <span className="nowrap">
+            <i className="sw sw-typical" /> {typicalLabel}
+          </span>{" "}
+          <span className="nowrap">({spec.typical.label})</span>
         </div>
       )}
     </div>

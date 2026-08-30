@@ -157,11 +157,18 @@ button[aria-pressed="true"] {
   font-size: 14px;
   opacity: 0.82;
   max-width: 32ch;
+  text-wrap: balance;
 }
 
 .result-note {
   font-size: 12.5px;
   margin: 0;
+  max-width: 100%;
+  text-wrap: balance;
+}
+
+.nowrap {
+  white-space: nowrap;
 }
 
 .scale {
@@ -218,6 +225,7 @@ button[aria-pressed="true"] {
   margin-top: 7px;
   font-size: 12px;
   text-align: center;
+  text-wrap: balance;
 }
 
 .scale-legend .sw {
