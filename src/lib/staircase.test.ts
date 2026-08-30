@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { Staircase, DEFAULT_STAIRCASE, type StaircaseConfig } from "./staircase";
+import {
+  Staircase,
+  DEFAULT_STAIRCASE,
+  type StaircaseConfig,
+} from "./staircase";
 
 /** Simulated observer: logistic psychometric function in log10-contrast space. */
 function respondsCorrectly(
@@ -8,7 +12,8 @@ function respondsCorrectly(
   rng: () => number,
 ): boolean {
   const slope = 6;
-  const pCorrectAboveGuess = 1 / (1 + Math.exp(-slope * (level - trueThreshold)));
+  const pCorrectAboveGuess =
+    1 / (1 + Math.exp(-slope * (level - trueThreshold)));
   const guess = 0.5; // 2AFC
   const p = guess + (1 - guess) * pCorrectAboveGuess;
   return rng() < p;
@@ -92,8 +97,7 @@ describe("Staircase", () => {
       expect(t).not.toBeNull();
       estimates.push(t as number);
     }
-    const mean =
-      estimates.reduce((a, b) => a + b, 0) / estimates.length;
+    const mean = estimates.reduce((a, b) => a + b, 0) / estimates.length;
     // 3-down-1-up targets ~79% -> sits a bit above the 50%-midpoint threshold.
     expect(mean).toBeGreaterThan(trueThreshold - 0.15);
     expect(mean).toBeLessThan(trueThreshold + 0.35);

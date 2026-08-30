@@ -37,7 +37,8 @@ export const en = {
 
   "cres.sensitivityName": "Contrast sensitivity",
   "cres.thresholdName": "Contrast threshold",
-  "cres.meaning": "The faintest pattern you could still spot. Higher is better.",
+  "cres.meaning":
+    "The faintest pattern you could still spot. Higher is better.",
   "cres.thresholdMeaning": "How much contrast you needed. Lower is better.",
   "cres.about1":
     "Not the same as an eye-chart score. That is small letters; this is faint patterns.",

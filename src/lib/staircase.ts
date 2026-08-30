@@ -94,8 +94,7 @@ export class Staircase {
       this.runWrong = 0;
     }
 
-    const reversal =
-      dir !== 0 && this.lastDir !== 0 && dir !== this.lastDir;
+    const reversal = dir !== 0 && this.lastDir !== 0 && dir !== this.lastDir;
 
     const trial: StaircaseTrial = { level: this.level, correct, reversal };
     this.trials.push(trial);
