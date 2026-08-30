@@ -9,6 +9,11 @@ dev-dist
 # TypeScript incremental build info
 *.tsbuildinfo
 
+# Stray tsc output (tsconfig sets noEmit; this is a safety net)
+/src/**/*.js
+/src/**/*.d.ts
+/vite.config.js
+
 # Editor
 .vscode/*
 !.vscode/extensions.json
