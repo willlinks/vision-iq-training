@@ -255,26 +255,33 @@ Push needs iOS 16.4+ and the app added to the home screen.
   wired before they ship.
 - Solo-dev scope is large; phases below are ordered so there is something playable after Phase 2.
 
-## Current status (2026-08-29)
+## Current status (2026-08-30)
 
-Building the **game prototype first**, local-only, no backend. DB sync (Supabase or
-alternative) is deferred — revisit after the core loop is fun. For the prototype only, we skip
-the pnpm monorepo and use a single Vite + React + TS app; pure logic still lives DOM-free under
-`src/lib/` so it can be extracted to `packages/shared` later. Tooling: npm (no pnpm installed),
-Node 24. i18n live (JA default + EN).
+Building the **prototype first**, local-only, no backend. DB sync (Supabase or alternative) is
+deferred — revisit after the core loop is fun. Single Vite + React + TS app (pnpm monorepo
+deferred; pure logic already DOM-free under `src/lib/` + `src/result/gauge.ts`). Tooling: npm,
+Node 24. Repo: github.com/willlinks/vision-iq-training.
 
-Contrast-detection task: playable end-to-end, minimal run (5 reversals / 20-trial cap → result,
-~12-18 trials). "Not sure" button = forced random guess (valid for 2AFC). Fixed the early
-giveaway where the stimulus box resized/brightened — stage is now uniform grey with constant
-marker rings, both rings always canvas-painted, patch layer absolutely positioned. Topbar
-buttons have a fixed footprint so EN/JA label swaps don't reflow. Still needs real-device
-tuning of timings / staircase / patch geometry, and a proper inter-trial mask (currently a
-plain blank). Next: matrix reasoning prototype.
+Done: Vite/React/TS, Vitest (25), Prettier + ESLint (react-hooks), PWA (manifest + service
+worker + icons), top-level error boundary, GitHub Actions CI (`check` + build), i18n
+(JA default + EN).
+
+Contrast-detection task: playable end-to-end, minimal run (6 reversals / 30-trial cap →
+result; trial-tail fallback if the cap hits first). "Not sure" = forced random guess (valid
+for 2AFC). Uniform grey stage with constant marker rings, both always canvas-painted, patch
+layer absolutely positioned (no giveaway). Result screen: neutral min→max scale per metric
+with typical-range band + "you" marker, explanations, exercise cards. Topbar buttons fixed
+footprint (EN/JA swap doesn't reflow). Still needs real-device tuning of timings / staircase /
+patch geometry, and a real inter-trial mask (currently a plain blank). Next: matrix reasoning
+prototype.
 
 ## Phased build
 
-**Phase 0 — Scaffold.** pnpm workspace, `shared` + `web` packages, Vite + React + TS, PWA
-manifest + service worker, lint/test setup, Vercel/Netlify deploy from GitHub.
+**Phase 0 — Scaffold.** ✅ mostly done. Vite + React + TS, Vitest, Prettier + ESLint
+(react-hooks), PWA manifest + service worker + icons, error boundary, `.nvmrc` + engines,
+GitHub Actions CI. *Left:* connect Vercel/Netlify to the repo for auto-deploy (needs a
+dashboard step; config is a no-op for Vite). *Deferred on purpose:* pnpm workspace /
+`packages/shared` — extract when a second consumer of the pure logic exists.
 
 **Phase 1 — Gabor engine.** `shared/gabor` formula + tests; `web/src/render` canvas renderer +
 sprite cache; a dev page rendering patches with live param sliders.
@@ -308,10 +315,10 @@ weekly recap. Ship to the closed group here.
 
 ## Verification
 
-- `pnpm test` in `shared` — gabor math, staircase convergence (simulated observer converges to
-  known threshold), daily-seed determinism, scoring.
-- `pnpm --filter web dev` → open on desktop + on the iPad mini over LAN; run a full daily
-  session; confirm 60fps on the odd-one-out grid on the oldest target device.
+- `npm run check` — Prettier, ESLint, `tsc`, and Vitest (gabor math, staircase convergence,
+  gauge maths, i18n parity). Later, in `shared`: daily-seed determinism, scoring.
+- `npm run dev` → open on desktop + on the iPad mini over LAN; run a full daily session;
+  confirm 60fps on the odd-one-out grid on the oldest target device.
 - Supabase: local `supabase start`; integration test that `submit-session` rejects a tampered
   score and a wrong-date submission; two clients see each other on the leaderboard via Realtime.
 - PWA: Lighthouse PWA audit passes; installs to home screen on iPad; works fully offline after
