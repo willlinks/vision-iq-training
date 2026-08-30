@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DEFAULT_GABOR, type GaborParams, toRad } from "../lib/gabor";
-import { Staircase, type StaircaseConfig, DEFAULT_STAIRCASE } from "../lib/staircase";
+import {
+  Staircase,
+  type StaircaseConfig,
+  DEFAULT_STAIRCASE,
+} from "../lib/staircase";
 import { GaborView } from "../render/GaborView";
 import { useT } from "../i18n";
 import { ResultPanel } from "../result/ResultPanel";
@@ -30,6 +34,20 @@ const TASK_STAIRCASE: StaircaseConfig = {
   maxReversals: 6,
   burnInReversals: 2,
 };
+const MAX_REVERSALS = TASK_STAIRCASE.maxReversals;
+
+interface RunResult {
+  thresholdPct: number | null;
+  sensitivity: number | null;
+}
+
+function readResult(sc: Staircase): RunResult {
+  const threshold = sc.threshold();
+  const thresholdPct = threshold != null ? Math.pow(10, threshold) * 100 : null;
+  const sensitivity =
+    thresholdPct != null ? Math.round(100 / thresholdPct) : null;
+  return { thresholdPct, sensitivity };
+}
 
 interface Props {
   onExit: () => void;
@@ -59,6 +77,8 @@ export function ContrastDetection({ onExit }: Props) {
   const [contrast, setContrast] = useState(0);
   const [orientationDeg, setOrientationDeg] = useState(45);
   const [lastCorrect, setLastCorrect] = useState<boolean | null>(null);
+  const [reversals, setReversals] = useState(0);
+  const [result, setResult] = useState<RunResult | null>(null);
   const timers = useRef<number[]>([]);
   const [size] = useState(patchSize);
 
@@ -110,6 +130,8 @@ export function ContrastDetection({ onExit }: Props) {
     clearTimers();
     staircaseRef.current = new Staircase(TASK_STAIRCASE);
     setTrialN(0);
+    setReversals(0);
+    setResult(null);
     setLastCorrect(null);
     startTrial();
   }, [clearTimers, startTrial]);
@@ -121,18 +143,16 @@ export function ContrastDetection({ onExit }: Props) {
       // "Not sure" = a forced guess, which is exactly what 2AFC already assumes,
       // so it keeps the staircase valid rather than biasing it.
       const resolved: Side =
-        choice === "unsure"
-          ? Math.random() < 0.5
-            ? "left"
-            : "right"
-          : choice;
+        choice === "unsure" ? (Math.random() < 0.5 ? "left" : "right") : choice;
       const correct = resolved === target;
       sc.answer(correct);
       setLastCorrect(correct);
+      setReversals(sc.reversals);
       const n = trialN + 1;
       setTrialN(n);
       setPhase("iti");
       if (sc.finished || n >= MAX_TRIALS) {
+        setResult(readResult(sc));
         after(ITI_MS, () => setPhase("done"));
       } else {
         after(ITI_MS, startTrial);
@@ -140,8 +160,6 @@ export function ContrastDetection({ onExit }: Props) {
     },
     [phase, target, trialN, after, startTrial],
   );
-
-  const sc = staircaseRef.current;
 
   if (phase === "intro") {
     return (
@@ -158,10 +176,10 @@ export function ContrastDetection({ onExit }: Props) {
   }
 
   if (phase === "done") {
-    const threshold = sc.threshold();
-    const pct = threshold != null ? Math.pow(10, threshold) * 100 : null;
-    const sensitivity = pct != null ? Math.round(100 / pct) : null;
-    const view = buildContrastResult(t, { thresholdPct: pct, sensitivity });
+    const view = buildContrastResult(
+      t,
+      result ?? { thresholdPct: null, sensitivity: null },
+    );
     return (
       <div className="screen scroll">
         <h2>{t("contrast.done")}</h2>
@@ -183,12 +201,11 @@ export function ContrastDetection({ onExit }: Props) {
   return (
     <div className="stage">
       <div className="hud">
-        <span>{t("contrast.hudTrial", { n: trialN + 1, max: MAX_TRIALS })}</span>
         <span>
-          {t("contrast.hudReversals", {
-            n: sc.reversals,
-            max: sc.config.maxReversals,
-          })}
+          {t("contrast.hudTrial", { n: trialN + 1, max: MAX_TRIALS })}
+        </span>
+        <span>
+          {t("contrast.hudReversals", { n: reversals, max: MAX_REVERSALS })}
         </span>
         {lastCorrect != null && phase === "iti" && (
           <span>{lastCorrect ? "✓" : "✕"}</span>
