@@ -20,7 +20,7 @@ interface Props {
 
 function cellSize(): number {
   const w = typeof window !== "undefined" ? window.innerWidth : 360;
-  return Math.round(Math.min(Math.max(w * 0.84, 240), 330) / 3) - 6;
+  return Math.round(Math.min(Math.max(w * 0.78, 216), 300) / 3) - 6;
 }
 
 function clock(ms: number): string {
@@ -148,7 +148,6 @@ export function MatrixReasoning({ onExit }: Props) {
     <div className="screen scroll matrix-screen">
       <div className="muted matrix-hud">
         <span>{t("matrix.progress", { n: index + 1, max: PUZZLES })}</span>
-        <span>{t("matrix.score", { n: correct, max: PUZZLES })}</span>
         <span>{clock(now - startedAt)}</span>
       </div>
 
