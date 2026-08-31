@@ -35,6 +35,10 @@ Node version is pinned in `.nvmrc` (24). CI (`.github/workflows/ci.yml`) runs
   trial never resizes or flashes the ring — only the grating is a cue. Still
   prototype-tuning: timings, staircase params, and patch geometry need
   real-device iteration.
+- **Matrix reasoning** (`src/tasks/MatrixReasoning.tsx`, `src/lib/matrix.ts`) —
+  3×3 Gabor grid, 1–2 parameters (orientation / wavelength / contrast) step
+  across rows and columns; complete the bottom-right cell from six options. Six
+  puzzles, difficulty ramps. Seeded generator, unit-tested.
 - **Gabor lab** (`src/tasks/GaborLab.tsx`) — live parameter sliders over the
   renderer.
 

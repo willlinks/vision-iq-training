@@ -277,8 +277,14 @@ for 2AFC). Uniform grey stage with constant marker rings, both always canvas-pai
 layer absolutely positioned (no giveaway). Result screen: neutral min→max scale per metric
 with typical-range band + "you" marker, explanations, exercise cards. Topbar buttons fixed
 footprint (EN/JA swap doesn't reflow). Still needs real-device tuning of timings / staircase /
-patch geometry, and a real inter-trial mask (currently a plain blank). Next: matrix reasoning
-prototype.
+patch geometry, and a real inter-trial mask (currently a plain blank).
+
+Matrix reasoning task (Phase 3, first): `src/lib/matrix.ts` seeded generator — 3×3 grid,
+1–2 rules over orientation / wavelength / contrast, difficulty ramps across 6 puzzles;
+distractors are real one-axis cells + over/undershoot. `scaleGabor()` renders 96px-reference
+params at any cell size. Result = accuracy + median time (no scale). **Open: on-device
+legibility of the Gabor-textured cells — check before building more puzzle variety.** Next:
+confirm legibility, then N-back, block rotation, odd-one-out.
 
 ## Phased build
 
