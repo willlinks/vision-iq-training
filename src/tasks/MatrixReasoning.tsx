@@ -13,7 +13,6 @@ import { buildMatrixResult } from "../result/matrixResult";
 type Phase = "intro" | "puzzle" | "reveal" | "done";
 
 const PUZZLES = 6;
-const REVEAL_MS = 800;
 
 interface Props {
   onExit: () => void;
@@ -28,6 +27,10 @@ function cellSize(): number {
  * Gabor matrix reasoning: spot the rule that runs across the rows and columns
  * and pick the patch that completes the grid. Six puzzles, difficulty ramping
  * with the puzzle index.
+ *
+ * Answering snaps the chosen patch into the blank cell and reveals the correct
+ * one there (green) plus a wrong pick (red); the player taps Next to continue,
+ * so a mistake can be studied for as long as they want.
  */
 export function MatrixReasoning({ onExit }: Props) {
   const t = useT();
@@ -64,18 +67,19 @@ export function MatrixReasoning({ onExit }: Props) {
       setCorrect((c) => c + (hit ? 1 : 0));
       setTimes((ts) => [...ts, performance.now() - shownAt]);
       setPhase("reveal");
-      window.setTimeout(() => {
-        const next = index + 1;
-        if (next >= PUZZLES) {
-          setPhase("done");
-        } else {
-          setIndex(next);
-          startPuzzle(next);
-        }
-      }, REVEAL_MS);
     },
-    [phase, puzzle, shownAt, index, startPuzzle],
+    [phase, puzzle, shownAt],
   );
+
+  const advance = useCallback(() => {
+    const next = index + 1;
+    if (next >= PUZZLES) {
+      setPhase("done");
+    } else {
+      setIndex(next);
+      startPuzzle(next);
+    }
+  }, [index, startPuzzle]);
 
   const view = useMemo(
     () => buildMatrixResult(t, { correct, total: PUZZLES, timesMs: times }),
@@ -112,6 +116,7 @@ export function MatrixReasoning({ onExit }: Props) {
 
   if (!puzzle) return null;
   const revealing = phase === "reveal";
+  const wrong = revealing && picked !== puzzle.answerIndex;
 
   return (
     <div className="screen scroll matrix-screen">
@@ -123,20 +128,40 @@ export function MatrixReasoning({ onExit }: Props) {
         className="matrix-grid"
         style={{ gridTemplateColumns: `repeat(3, ${size}px)` }}
       >
-        {puzzle.grid.map((cell, i) => (
-          <div
-            className="matrix-cell"
-            key={i}
-            style={{ width: size, height: size }}
-          >
-            {i === 8 ? (
-              <span className="matrix-blank">?</span>
-            ) : (
+        {puzzle.grid.map((cell, i) => {
+          if (i === 8) {
+            return (
+              <div
+                className={`matrix-cell blank${revealing ? " correct" : ""}`}
+                key={i}
+                style={{ width: size, height: size }}
+              >
+                {revealing ? (
+                  <div className="matrix-snap">
+                    <GaborView
+                      params={scaleGabor(puzzle.grid[8]!, k)}
+                      size={size}
+                    />
+                  </div>
+                ) : (
+                  <span className="matrix-blank">?</span>
+                )}
+              </div>
+            );
+          }
+          return (
+            <div
+              className="matrix-cell"
+              key={i}
+              style={{ width: size, height: size }}
+            >
               <GaborView params={scaleGabor(cell, k)} size={size} />
-            )}
-          </div>
-        ))}
+            </div>
+          );
+        })}
       </div>
+
+      {wrong && <p className="muted matrix-note">{t("matrix.answerShown")}</p>}
 
       <div
         className="matrix-options"
@@ -164,7 +189,13 @@ export function MatrixReasoning({ onExit }: Props) {
         })}
       </div>
 
-      <button onClick={onExit}>{t("common.back")}</button>
+      {revealing ? (
+        <button className="primary" onClick={advance}>
+          {index + 1 >= PUZZLES ? t("matrix.seeResults") : t("common.next")}
+        </button>
+      ) : (
+        <button onClick={onExit}>{t("common.back")}</button>
+      )}
     </div>
   );
 }

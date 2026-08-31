@@ -9,6 +9,7 @@ export const ja: Record<StringKey, string> = {
   "common.start": "はじめる",
   "common.done": "おつかれさまでした",
   "common.runAgain": "もう一度",
+  "common.next": "次へ",
 
   "lang.switchTo": "EN",
 
@@ -38,6 +39,8 @@ export const ja: Record<StringKey, string> = {
   "matrix.intro":
     "どのマス目も、行と列にそって隠れた規則で変化しています。右下の空欄に入る模様を選んでください。",
   "matrix.progress": "{n} / {max}",
+  "matrix.answerShown": "空欄に入る正解は、この模様です。",
+  "matrix.seeResults": "結果を見る",
 
   "mres.correctName": "正解数",
   "mres.correctMeaning": "今回解けた問題の数です。",

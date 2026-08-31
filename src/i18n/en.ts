@@ -7,6 +7,7 @@ export const en = {
   "common.start": "Start",
   "common.done": "Done",
   "common.runAgain": "Run again",
+  "common.next": "Next",
 
   "lang.switchTo": "日本語",
 
@@ -36,6 +37,8 @@ export const en = {
   "matrix.intro":
     "Every grid follows a hidden rule across its rows and columns. Pick the patch that completes the bottom-right cell.",
   "matrix.progress": "{n} / {max}",
+  "matrix.answerShown": "The filled cell is the correct answer.",
+  "matrix.seeResults": "See results",
 
   "mres.correctName": "Correct",
   "mres.correctMeaning": "Puzzles you solved this round.",

@@ -370,12 +370,46 @@ button[aria-pressed="true"] {
   cursor: default;
 }
 
-.matrix-option.correct {
+.matrix-option.correct,
+.matrix-cell.correct {
   border-color: #4caf7d;
 }
 
 .matrix-option.wrong {
   border-color: #c65b5b;
+}
+
+.matrix-cell.correct {
+  outline: 2px solid #4caf7d;
+  outline-offset: -2px;
+}
+
+.matrix-note {
+  font-size: 12.5px;
+  margin: 0;
+}
+
+.matrix-snap {
+  width: 100%;
+  height: 100%;
+  animation: matrix-pop 200ms ease-out;
+}
+
+@keyframes matrix-pop {
+  from {
+    transform: scale(0.55);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .matrix-snap {
+    animation: none;
+  }
 }
 
 /* Vision task stage: uniform mid-grey, fills the viewport. Nothing here changes
