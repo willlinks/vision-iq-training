@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { ContrastDetection } from "./tasks/ContrastDetection";
+import { MatrixReasoning } from "./tasks/MatrixReasoning";
 import { GaborLab } from "./tasks/GaborLab";
 import { useI18n } from "./i18n";
 
-type Route = "home" | "contrast" | "lab";
+type Route = "home" | "contrast" | "matrix" | "lab";
 
 export function App() {
   const [route, setRoute] = useState<Route>("home");
@@ -36,12 +37,18 @@ export function App() {
           <button className="primary" onClick={() => setRoute("contrast")}>
             {t("home.contrast")}
           </button>
+          <button className="primary" onClick={() => setRoute("matrix")}>
+            {t("home.matrix")}
+          </button>
           <button onClick={() => setRoute("lab")}>{t("home.lab")}</button>
         </div>
       )}
 
       {route === "contrast" && (
         <ContrastDetection onExit={() => setRoute("home")} />
+      )}
+      {route === "matrix" && (
+        <MatrixReasoning onExit={() => setRoute("home")} />
       )}
       {route === "lab" && <GaborLab onExit={() => setRoute("home")} />}
     </>

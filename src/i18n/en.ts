@@ -4,13 +4,17 @@ export const en = {
   "nav.home": "Home",
 
   "common.back": "Back",
+  "common.start": "Start",
+  "common.done": "Done",
+  "common.runAgain": "Run again",
 
   "lang.switchTo": "日本語",
 
   "home.heading": "Prototype",
   "home.blurb":
-    "Local-only. Two things work so far: the adaptive contrast-detection task and a Gabor parameter playground.",
+    "Local-only. Working so far: contrast detection, matrix reasoning, and a Gabor parameter playground.",
   "home.contrast": "Contrast detection",
+  "home.matrix": "Matrix reasoning",
   "home.lab": "Gabor lab",
 
   "contrast.heading": "Contrast detection",
@@ -27,6 +31,32 @@ export const en = {
   "contrast.leftSquare": "left side",
   "contrast.rightSquare": "right side",
   "contrast.notSure": "Not sure",
+
+  "matrix.heading": "Matrix reasoning",
+  "matrix.intro":
+    "Every grid follows a hidden rule across its rows and columns. Pick the patch that completes the bottom-right cell.",
+  "matrix.progress": "{n} / {max}",
+
+  "mres.correctName": "Correct",
+  "mres.correctMeaning": "Puzzles you solved this round.",
+  "mres.timeName": "Median time",
+  "mres.timeMeaning": "Half your answers were faster than this.",
+  "mres.about1": "This is pattern reasoning — finding a rule and applying it.",
+  "mres.about2":
+    "Practice helps, but the gains stay mostly specific to this kind of puzzle.",
+  "mres.about3":
+    "Speed and accuracy trade off. Rushing usually costs correctness.",
+
+  "mtip.scan.t": "Check rows and columns separately",
+  "mtip.scan.b": "Find one rule at a time, then combine them.",
+  "mtip.eliminate.t": "Rule options out",
+  "mtip.eliminate.b": "Reject any option that breaks a rule you already found.",
+  "mtip.variety.t": "Mix up your puzzles",
+  "mtip.variety.b": "Varied puzzle types transfer better than drilling one.",
+  "mtip.sleep.t": "Sleep on it",
+  "mtip.sleep.b": "Reasoning drops fast when you are short on sleep.",
+  "mtip.daily.t": "Short and regular",
+  "mtip.daily.b": "A few minutes daily beats an occasional long session.",
 
   "result.note":
     "Rough guide — the screen is not calibrated. Your trend over time matters more than one score.",

@@ -6,13 +6,17 @@ export const ja: Record<StringKey, string> = {
   "nav.home": "ホーム",
 
   "common.back": "戻る",
+  "common.start": "はじめる",
+  "common.done": "おつかれさまでした",
+  "common.runAgain": "もう一度",
 
   "lang.switchTo": "EN",
 
   "home.heading": "プロトタイプ",
   "home.blurb":
-    "ローカル動作のみ。いまはコントラスト検出と、ガボールのパラメータ確認画面が試せます。",
+    "ローカル動作のみ。いまはコントラスト検出、行列推理、ガボールのパラメータ確認が試せます。",
   "home.contrast": "コントラスト検出",
+  "home.matrix": "行列推理",
   "home.lab": "ガボール ラボ",
 
   "contrast.heading": "コントラスト検出",
@@ -29,6 +33,30 @@ export const ja: Record<StringKey, string> = {
   "contrast.leftSquare": "左",
   "contrast.rightSquare": "右",
   "contrast.notSure": "わからない",
+
+  "matrix.heading": "行列推理",
+  "matrix.intro":
+    "どのマス目も、行と列にそって隠れた規則で変化しています。右下の空欄に入る模様を選んでください。",
+  "matrix.progress": "{n} / {max}",
+
+  "mres.correctName": "正解数",
+  "mres.correctMeaning": "今回解けた問題の数です。",
+  "mres.timeName": "解答時間の中央値",
+  "mres.timeMeaning": "解答の半分は、これより速かったということです。",
+  "mres.about1": "規則を見つけて当てはめる、パターン推理の力です。",
+  "mres.about2": "練習で伸びますが、その効果の多くはこの種の問題に限られます。",
+  "mres.about3": "速さと正確さは両立しにくく、急ぐと正答率は下がりがちです。",
+
+  "mtip.scan.t": "行と列を分けて見る",
+  "mtip.scan.b": "規則は一つずつ見つけて、あとで組み合わせます。",
+  "mtip.eliminate.t": "選択肢を消していく",
+  "mtip.eliminate.b": "見つけた規則に合わない選択肢を外します。",
+  "mtip.variety.t": "いろいろな問題に触れる",
+  "mtip.variety.b": "1種類の反復より、種類を変えるほうが役立ちます。",
+  "mtip.sleep.t": "睡眠をとる",
+  "mtip.sleep.b": "睡眠不足だと推理力はすぐに落ちます。",
+  "mtip.daily.t": "短く、こまめに",
+  "mtip.daily.b": "たまの長時間より、毎日数分のほうが効きます。",
 
   "result.note":
     "おおよその目安です（画面は較正されていません）。1回の数値より、続けたときの変化を見てください。",

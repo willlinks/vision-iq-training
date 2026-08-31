@@ -312,6 +312,72 @@ button[aria-pressed="true"] {
   line-height: 1.45;
 }
 
+/* ---- Matrix reasoning ---- */
+.matrix-screen {
+  gap: 12px;
+}
+
+.matrix-progress {
+  font-size: 13px;
+}
+
+.matrix-grid,
+.matrix-options {
+  display: grid;
+  gap: 6px;
+  justify-content: center;
+}
+
+.matrix-options {
+  margin-top: 4px;
+}
+
+.matrix-cell,
+.matrix-option {
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--grey);
+  padding: 0;
+}
+
+.matrix-cell canvas,
+.matrix-option canvas {
+  display: block;
+}
+
+.matrix-blank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 32px;
+  font-weight: 700;
+  color: #3a3a3a;
+}
+
+.matrix-option {
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.matrix-option:active {
+  transform: none;
+}
+
+.matrix-option:disabled {
+  cursor: default;
+}
+
+.matrix-option.correct {
+  border-color: #4caf7d;
+}
+
+.matrix-option.wrong {
+  border-color: #c65b5b;
+}
+
 /* Vision task stage: uniform mid-grey, fills the viewport. Nothing here changes
    appearance between trials except the grating inside a marker ring. */
 .stage {

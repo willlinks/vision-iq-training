@@ -54,6 +54,19 @@ export function cyclesPerPixel(params: GaborParams): number {
   return 1 / params.wavelength;
 }
 
+/**
+ * Scales the pixel-valued fields (envelope size + wavelength) by `k`, leaving
+ * orientation / phase / contrast untouched. Lets a task author params for one
+ * reference cell size and render them at whatever size the screen allows.
+ */
+export function scaleGabor(params: GaborParams, k: number): GaborParams {
+  return {
+    ...params,
+    sigma: params.sigma * k,
+    wavelength: params.wavelength * k,
+  };
+}
+
 /** Degrees ↔ radians helpers, since task configs think in degrees. */
 export const toRad = (deg: number): number => (deg * Math.PI) / 180;
 export const toDeg = (rad: number): number => (rad * 180) / Math.PI;
