@@ -4,6 +4,7 @@ Gabor-patch vision training + cognitive puzzles, mobile-first web app. See
 [PLANNING.md](PLANNING.md) for the full design and roadmap.
 
 **Status:** prototype. Local-only, no backend yet.
+**Live:** https://eyeq-training.vercel.app (auto-deploys from `main`)
 
 ## Run
 
@@ -67,12 +68,15 @@ All copy is intentionally short-sentence and lives in `src/i18n`.
 generated from `public/icon.svg` — after editing it run
 `node scripts/gen-icons.mjs`.
 
-Install to a phone home screen: open the served URL, "Add to Home Screen"
-(iOS needs Safari; Web Push needs iOS 16.4+).
+Install to a phone home screen: open https://eyeq-training.vercel.app →
+"Add to Home Screen" (iOS needs Safari; Web Push needs iOS 16.4+). The service
+worker only runs over HTTPS, so use the Vercel URL, not the LAN dev server.
 
-Deploy: connect this repo to Vercel or Netlify. Vite is auto-detected — build
-`npm run build`, output `dist/`. The service worker's `navigateFallback`
-handles SPA routing; no extra rewrite config needed.
+Deploy: **Vercel**, GitHub-connected — every push to `main` redeploys, PRs get
+preview URLs. Vite is auto-detected (build `npm run build`, output `dist/`); the
+service worker's `navigateFallback` handles SPA routing, no rewrite config
+needed. The `eyeq-training` domain is a Vercel subdomain only — the app name is
+still `vision-iq-training` (see PLANNING for the naming question).
 
 ## Layout
 

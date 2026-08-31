@@ -1,6 +1,8 @@
 # vision-iq-training — Planning
 
-Working name: **vision-iq-training** (product name "EyeQ" TBD — check trademark before shipping).
+Working name: **vision-iq-training**. Product name still open — "EyeQ" looks unusable ("EyeQ
+Vision" is an operating optometry practice in the same space); needs a distinct name before a
+public launch. The Vercel dev URL is `eyeq-training.vercel.app` (subdomain only).
 
 ## Context
 
@@ -260,7 +262,10 @@ Push needs iOS 16.4+ and the app added to the home screen.
 Building the **prototype first**, local-only, no backend. DB sync (Supabase or alternative) is
 deferred — revisit after the core loop is fun. Single Vite + React + TS app (pnpm monorepo
 deferred; pure logic already DOM-free under `src/lib/` + `src/result/gauge.ts`). Tooling: npm,
-Node 24. Repo: github.com/willlinks/vision-iq-training.
+Node 24. Repo: github.com/willlinks/vision-iq-training. Live (Vercel, auto-deploy from `main`):
+https://eyeq-training.vercel.app — subdomain only; the app is still named `vision-iq-training`
+(product name "EyeQ" is doubtful — an operating optometry practice "EyeQ Vision" already does
+myopia/vision management; pick a distinct name before any public launch).
 
 Done: Vite/React/TS, Vitest (25), Prettier + ESLint (react-hooks), PWA (manifest + service
 worker + icons), top-level error boundary, GitHub Actions CI (`check` + build), i18n
