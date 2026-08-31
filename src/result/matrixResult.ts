@@ -20,13 +20,23 @@ function median(xs: number[]): number | null {
   return s.length % 2 ? s[mid]! : (s[mid - 1]! + s[mid]!) / 2;
 }
 
+function mmss(ms: number): string {
+  const s = Math.round(ms / 1000);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+}
+
 /**
  * Result view for matrix reasoning. Accuracy and speed only — no scale, since a
  * six-puzzle round is too short to place on a meaningful range.
  */
 export function buildMatrixResult(
   t: T,
-  input: { correct: number; total: number; timesMs: number[] },
+  input: {
+    correct: number;
+    total: number;
+    timesMs: number[];
+    totalMs: number;
+  },
 ): ResultView {
   const med = median(input.timesMs);
 
@@ -36,6 +46,11 @@ export function buildMatrixResult(
         name: t("mres.correctName"),
         displayValue: `${input.correct} / ${input.total}`,
         meaning: t("mres.correctMeaning"),
+      },
+      {
+        name: t("mres.totalName"),
+        displayValue: input.totalMs > 0 ? mmss(input.totalMs) : "—",
+        meaning: t("mres.totalMeaning"),
       },
       {
         name: t("mres.timeName"),

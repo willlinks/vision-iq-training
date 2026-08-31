@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { scaleGabor } from "../lib/gabor";
 import {
   generateMatrixPuzzle,
@@ -23,6 +23,11 @@ function cellSize(): number {
   return Math.round(Math.min(Math.max(w * 0.84, 240), 330) / 3) - 6;
 }
 
+function clock(ms: number): string {
+  const s = Math.max(0, Math.floor(ms / 1000));
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+}
+
 /**
  * Gabor matrix reasoning: spot the rule that runs across the rows and columns
  * and pick the patch that completes the grid. Six puzzles, difficulty ramping
@@ -43,7 +48,18 @@ export function MatrixReasoning({ onExit }: Props) {
   const [shownAt, setShownAt] = useState(0);
   const [size] = useState(cellSize);
 
+  const [startedAt, setStartedAt] = useState(0);
+  const [now, setNow] = useState(0);
+  const [totalMs, setTotalMs] = useState(0);
+
   const k = size / REF_CELL;
+  const running = phase === "puzzle" || phase === "reveal";
+
+  useEffect(() => {
+    if (!running) return;
+    const id = window.setInterval(() => setNow(performance.now()), 250);
+    return () => window.clearInterval(id);
+  }, [running]);
 
   const startPuzzle = useCallback((i: number) => {
     setPuzzle(generateMatrixPuzzle(i, Math.random));
@@ -56,6 +72,9 @@ export function MatrixReasoning({ onExit }: Props) {
     setIndex(0);
     setCorrect(0);
     setTimes([]);
+    setTotalMs(0);
+    setStartedAt(performance.now());
+    setNow(performance.now());
     startPuzzle(0);
   }, [startPuzzle]);
 
@@ -74,16 +93,23 @@ export function MatrixReasoning({ onExit }: Props) {
   const advance = useCallback(() => {
     const next = index + 1;
     if (next >= PUZZLES) {
+      setTotalMs(performance.now() - startedAt);
       setPhase("done");
     } else {
       setIndex(next);
       startPuzzle(next);
     }
-  }, [index, startPuzzle]);
+  }, [index, startedAt, startPuzzle]);
 
   const view = useMemo(
-    () => buildMatrixResult(t, { correct, total: PUZZLES, timesMs: times }),
-    [t, correct, times],
+    () =>
+      buildMatrixResult(t, {
+        correct,
+        total: PUZZLES,
+        timesMs: times,
+        totalMs,
+      }),
+    [t, correct, times, totalMs],
   );
 
   if (phase === "intro") {
@@ -120,8 +146,10 @@ export function MatrixReasoning({ onExit }: Props) {
 
   return (
     <div className="screen scroll matrix-screen">
-      <div className="muted matrix-progress">
-        {t("matrix.progress", { n: index + 1, max: PUZZLES })}
+      <div className="muted matrix-hud">
+        <span>{t("matrix.progress", { n: index + 1, max: PUZZLES })}</span>
+        <span>{t("matrix.score", { n: correct, max: PUZZLES })}</span>
+        <span>{clock(now - startedAt)}</span>
       </div>
 
       <div

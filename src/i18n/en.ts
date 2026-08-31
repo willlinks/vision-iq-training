@@ -37,11 +37,14 @@ export const en = {
   "matrix.intro":
     "Every grid follows a hidden rule across its rows and columns. Pick the patch that completes the bottom-right cell.",
   "matrix.progress": "{n} / {max}",
+  "matrix.score": "correct {n}/{max}",
   "matrix.answerShown": "The filled cell is the correct answer.",
   "matrix.seeResults": "See results",
 
   "mres.correctName": "Correct",
   "mres.correctMeaning": "Puzzles you solved this round.",
+  "mres.totalName": "Total time",
+  "mres.totalMeaning": "How long the whole round took.",
   "mres.timeName": "Median time",
   "mres.timeMeaning": "Half your answers were faster than this.",
   "mres.about1": "This is pattern reasoning — finding a rule and applying it.",

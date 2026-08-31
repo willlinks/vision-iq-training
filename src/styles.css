@@ -317,8 +317,12 @@ button[aria-pressed="true"] {
   gap: 12px;
 }
 
-.matrix-progress {
+.matrix-hud {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
   font-size: 13px;
+  font-variant-numeric: tabular-nums;
 }
 
 .matrix-grid,
