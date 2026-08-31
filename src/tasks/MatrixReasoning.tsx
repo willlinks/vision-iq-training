@@ -34,8 +34,9 @@ function clock(ms: number): string {
  * with the puzzle index.
  *
  * Answering snaps the chosen patch into the blank cell and reveals the correct
- * one there (green) plus a wrong pick (red); the player taps Next to continue,
- * so a mistake can be studied for as long as they want.
+ * one there (green) plus a wrong pick (red). A correct answer moves on almost
+ * immediately; a wrong one lingers a few seconds so the answer registers, then
+ * advances on its own — no button to press mid-round.
  */
 export function MatrixReasoning({ onExit }: Props) {
   const t = useT();
@@ -100,6 +101,15 @@ export function MatrixReasoning({ onExit }: Props) {
       startPuzzle(next);
     }
   }, [index, startedAt, startPuzzle]);
+
+  // Auto-advance after an answer: quick on a hit, a longer hold on a miss so the
+  // correct patch has time to land. The player never waits on a button.
+  useEffect(() => {
+    if (phase !== "reveal" || !puzzle) return;
+    const hit = picked === puzzle.answerIndex;
+    const id = window.setTimeout(advance, hit ? 700 : 2600);
+    return () => window.clearTimeout(id);
+  }, [phase, puzzle, picked, advance]);
 
   const view = useMemo(
     () =>
@@ -216,13 +226,9 @@ export function MatrixReasoning({ onExit }: Props) {
         })}
       </div>
 
-      {revealing ? (
-        <button className="primary" onClick={advance}>
-          {index + 1 >= PUZZLES ? t("matrix.seeResults") : t("common.next")}
-        </button>
-      ) : (
-        <button onClick={onExit}>{t("common.back")}</button>
-      )}
+      <button onClick={onExit} disabled={revealing}>
+        {t("common.back")}
+      </button>
     </div>
   );
 }
