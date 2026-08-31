@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { scaleGabor } from "../lib/gabor";
 import {
+  describeMiss,
   generateMatrixPuzzle,
   REF_CELL,
   type MatrixPuzzle,
 } from "../lib/matrix";
 import { GaborView } from "../render/GaborView";
 import { useT } from "../i18n";
+import type { StringKey } from "../i18n/en";
 import { ResultPanel } from "../result/ResultPanel";
 import { buildMatrixResult } from "../result/matrixResult";
 
@@ -111,6 +113,17 @@ export function MatrixReasoning({ onExit }: Props) {
     return () => window.clearTimeout(id);
   }, [phase, puzzle, picked, advance]);
 
+  const missNote = useMemo(() => {
+    if (phase !== "reveal" || picked == null || !puzzle) return null;
+    if (picked === puzzle.answerIndex) return null;
+    const dims = describeMiss(puzzle.options[picked]!, puzzle.grid[8]!);
+    if (dims.length === 0) return t("matrix.missVague");
+    const names = dims
+      .map((d) => t(`matrix.dim.${d}` as StringKey))
+      .join(t("matrix.dimSep"));
+    return t("matrix.miss", { dims: names });
+  }, [phase, picked, puzzle, t]);
+
   const view = useMemo(
     () =>
       buildMatrixResult(t, {
@@ -198,7 +211,7 @@ export function MatrixReasoning({ onExit }: Props) {
         })}
       </div>
 
-      {wrong && <p className="muted matrix-note">{t("matrix.answerShown")}</p>}
+      {wrong && <p className="muted matrix-note">{missNote}</p>}
 
       <div
         className="matrix-options"

@@ -41,6 +41,12 @@ export const ja: Record<StringKey, string> = {
   "matrix.progress": "{n} / {max}",
   "matrix.score": "正解 {n}/{max}",
   "matrix.answerShown": "空欄に入る正解は、この模様です。",
+  "matrix.miss": "選んだ模様は {dims} が違います。",
+  "matrix.missVague": "おしい。空欄に入る正解はこの模様です。",
+  "matrix.dim.theta": "傾き",
+  "matrix.dim.wavelength": "縞の幅",
+  "matrix.dim.contrast": "濃さ",
+  "matrix.dimSep": "・",
   "matrix.seeResults": "結果を見る",
 
   "mres.correctName": "正解数",

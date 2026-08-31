@@ -184,4 +184,28 @@ export function generateMatrixPuzzle(
   return { grid, options, answerIndex };
 }
 
+/** Circular distance between two orientations (π-periodic). */
+function thetaGap(a: number, b: number): number {
+  const d = Math.abs((((a - b) % Math.PI) + Math.PI) % Math.PI);
+  return Math.min(d, Math.PI - d);
+}
+
+/**
+ * Which parameters of a wrong pick differ from the correct patch, so the reveal
+ * can say what was off ("angle", "stripe width", …) rather than just "wrong".
+ * Returned in a stable order; empty only if the pick effectively matches.
+ */
+export function describeMiss(
+  pickParams: GaborParams,
+  answer: GaborParams,
+): MatrixDim[] {
+  const out: MatrixDim[] = [];
+  if (thetaGap(pickParams.theta, answer.theta) > toRad(8)) out.push("theta");
+  if (Math.abs(pickParams.wavelength - answer.wavelength) > 1)
+    out.push("wavelength");
+  if (Math.abs(pickParams.contrast - answer.contrast) > 0.03)
+    out.push("contrast");
+  return out;
+}
+
 export { REF_CELL };

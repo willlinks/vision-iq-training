@@ -39,6 +39,12 @@ export const en = {
   "matrix.progress": "{n} / {max}",
   "matrix.score": "correct {n}/{max}",
   "matrix.answerShown": "The filled cell is the correct answer.",
+  "matrix.miss": "Your patch was off on: {dims}",
+  "matrix.missVague": "Not quite — the filled cell is the correct answer.",
+  "matrix.dim.theta": "angle",
+  "matrix.dim.wavelength": "stripe width",
+  "matrix.dim.contrast": "contrast",
+  "matrix.dimSep": ", ",
   "matrix.seeResults": "See results",
 
   "mres.correctName": "Correct",
