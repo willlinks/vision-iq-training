@@ -282,9 +282,18 @@ patch geometry, and a real inter-trial mask (currently a plain blank).
 Matrix reasoning task (Phase 3, first): `src/lib/matrix.ts` seeded generator — 3×3 grid,
 1–2 rules over orientation / wavelength / contrast, difficulty ramps across 6 puzzles;
 distractors are real one-axis cells + over/undershoot. `scaleGabor()` renders 96px-reference
-params at any cell size. Result = accuracy + median time (no scale). **Open: on-device
-legibility of the Gabor-textured cells — check before building more puzzle variety.** Next:
-confirm legibility, then N-back, block rotation, odd-one-out.
+params at any cell size. Result = accuracy + median time (no scale). Reveal snaps the chosen
+patch into the blank, keeps the correct one on screen (green) and names which parameter a
+wrong pick got wrong; auto-advances (fast on a hit, brief hold on a miss). **Open: on-device
+legibility of the Gabor-textured cells — check before building more puzzle variety.**
+
+N-back task (Phase 3, second): `src/lib/nback.ts` seeded sequence generator + `scoreNBack`
+(hits / misses / false alarms / correct rejections). 2-back over a 6-angle orientation pool,
+22 patches (2 warm-up + 20 scored), ~32% target rate, 1.8s on / 0.7s gap. `src/tasks/NBack.tsx`
+streams patches with a single Match button and a green/red press flash; presses accumulate in
+a ref so a tap never restarts the step timers. Result = correct calls + repeats caught +
+false alarms (no scale). Next: block rotation, odd-one-out, then the session flow that chains
+warm-up → vision block → cognitive block → composite result.
 
 ## Phased build
 

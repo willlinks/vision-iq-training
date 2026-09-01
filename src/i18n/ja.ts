@@ -15,9 +15,10 @@ export const ja: Record<StringKey, string> = {
 
   "home.heading": "プロトタイプ",
   "home.blurb":
-    "ローカル動作のみ。いまはコントラスト検出、行列推理、ガボールのパラメータ確認が試せます。",
+    "ローカル動作のみ。いまはコントラスト検出、行列推理、Nバック、ガボールのパラメータ確認が試せます。",
   "home.contrast": "コントラスト検出",
   "home.matrix": "行列推理",
+  "home.nback": "Nバック",
   "home.lab": "ガボール ラボ",
 
   "contrast.heading": "コントラスト検出",
@@ -69,6 +70,43 @@ export const ja: Record<StringKey, string> = {
   "mtip.sleep.b": "睡眠不足だと推理力はすぐに落ちます。",
   "mtip.daily.t": "短く、こまめに",
   "mtip.daily.b": "たまの長時間より、毎日数分のほうが効きます。",
+
+  "nback.heading": "Nバック",
+  "nback.intro":
+    "傾きの違う模様が、1つずつ順に出ます。いまの傾きが「2つ前」と同じだと思ったら「一致」をタップしてください。",
+  "nback.match": "一致",
+  "nback.count": "{n} / {max}",
+  "nback.level": "2つ前",
+
+  "nres.correctName": "正しい判断",
+  "nres.correctMeaning":
+    "一致を拾えた数と、一致でないものを見送れた数の合計です。",
+  "nres.hitsName": "拾えた一致",
+  "nres.hitsMeaning": "本当に一致だったもののうち、印を付けられた割合です。",
+  "nres.faName": "早とちり",
+  "nres.faMeaning": "一致でない模様に「一致」を押してしまった回数です。",
+  "nres.note":
+    "1回の結果はぶれます。日をまたいで正答率が上がっていくかを見てください。",
+  "nb.about1":
+    "Nバックはワーキングメモリの訓練です。少しの情報を頭に保ち、次々に入れ替えていく力を使います。",
+  "nb.about2":
+    "この課題や近い課題での上達ははっきり出ますが、他への波及は小さく、議論があります。",
+  "nb.about3":
+    "低い段階で確実に当てるほうが、無理に段階を上げるより効きます。ほぼ外さなくなってから上げましょう。",
+
+  "nbtip.rehearse.t": "直近だけ覚えておく",
+  "nbtip.rehearse.b":
+    "直前の2つの傾きだけを頭に置き、新しい模様が来たら古いほうを捨てます。",
+  "nbtip.label.t": "傾きに名前をつける",
+  "nbtip.label.b":
+    "「横・縦・ななめ」と口の中で唱えると、映像より覚えやすくなります。",
+  "nbtip.restraint.t": "確信があるときだけ",
+  "nbtip.restraint.b":
+    "押し間違いは見落としと同じだけ損です。当てずっぽうは控えめに。",
+  "nbtip.daily.t": "毎日みじかく",
+  "nbtip.daily.b": "週に1回まとめてより、1日1〜2分のほうが効きます。",
+  "nbtip.rest.t": "睡眠と休憩",
+  "nbtip.rest.b": "疲れているとワーキングメモリは大きく落ちます。",
 
   "result.note":
     "おおよその目安です（画面は較正されていません）。1回の数値より、続けたときの変化を見てください。",

@@ -418,6 +418,49 @@ button[aria-pressed="true"] {
   }
 }
 
+/* ---- N-back ---- */
+.nback-screen {
+  gap: 18px;
+}
+
+.nback-hud {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  opacity: 0.8;
+  font-variant-numeric: tabular-nums;
+}
+
+.nback-patch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--grey);
+  outline: 3px solid transparent;
+  outline-offset: 2px;
+  transition: outline-color 0.1s;
+}
+
+.nback-patch canvas {
+  display: block;
+}
+
+.nback-patch.hit {
+  outline-color: #4caf7d;
+}
+
+.nback-patch.miss {
+  outline-color: #c65b5b;
+}
+
+.nback-match {
+  min-width: min(14rem, 70vw);
+}
+
 /* Vision task stage: uniform mid-grey, fills the viewport. Nothing here changes
    appearance between trials except the grating inside a marker ring. */
 .stage {

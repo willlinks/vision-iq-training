@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { ContrastDetection } from "./tasks/ContrastDetection";
 import { MatrixReasoning } from "./tasks/MatrixReasoning";
+import { NBack } from "./tasks/NBack";
 import { GaborLab } from "./tasks/GaborLab";
 import { useI18n } from "./i18n";
 
-type Route = "home" | "contrast" | "matrix" | "lab";
+type Route = "home" | "contrast" | "matrix" | "nback" | "lab";
 
 export function App() {
   const [route, setRoute] = useState<Route>("home");
@@ -40,6 +41,9 @@ export function App() {
           <button className="primary" onClick={() => setRoute("matrix")}>
             {t("home.matrix")}
           </button>
+          <button className="primary" onClick={() => setRoute("nback")}>
+            {t("home.nback")}
+          </button>
           <button onClick={() => setRoute("lab")}>{t("home.lab")}</button>
         </div>
       )}
@@ -50,6 +54,7 @@ export function App() {
       {route === "matrix" && (
         <MatrixReasoning onExit={() => setRoute("home")} />
       )}
+      {route === "nback" && <NBack onExit={() => setRoute("home")} />}
       {route === "lab" && <GaborLab onExit={() => setRoute("home")} />}
     </>
   );

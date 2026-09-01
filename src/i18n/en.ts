@@ -13,9 +13,10 @@ export const en = {
 
   "home.heading": "Prototype",
   "home.blurb":
-    "Local-only. Working so far: contrast detection, matrix reasoning, and a Gabor parameter playground.",
+    "Local-only. Working so far: contrast detection, matrix reasoning, n-back, and a Gabor parameter playground.",
   "home.contrast": "Contrast detection",
   "home.matrix": "Matrix reasoning",
+  "home.nback": "N-back",
   "home.lab": "Gabor lab",
 
   "contrast.heading": "Contrast detection",
@@ -69,6 +70,43 @@ export const en = {
   "mtip.sleep.b": "Reasoning drops fast when you are short on sleep.",
   "mtip.daily.t": "Short and regular",
   "mtip.daily.b": "A few minutes daily beats an occasional long session.",
+
+  "nback.heading": "N-back",
+  "nback.intro":
+    "Patches appear one at a time, each tilted a different way. Tap Match whenever the current tilt is the same as the patch two before it.",
+  "nback.match": "Match",
+  "nback.count": "{n} / {max}",
+  "nback.level": "2-back",
+
+  "nres.correctName": "Correct calls",
+  "nres.correctMeaning":
+    "Matches caught plus non-matches correctly left alone.",
+  "nres.hitsName": "Repeats caught",
+  "nres.hitsMeaning": "Of all the true repeats, how many you flagged.",
+  "nres.faName": "False alarms",
+  "nres.faMeaning": "Times you tapped Match on a patch that was not a repeat.",
+  "nres.note":
+    "One short round is noisy. Watch whether your accuracy climbs over days.",
+  "nb.about1":
+    "N-back trains working memory — holding a few items in mind and updating them as new ones arrive.",
+  "nb.about2":
+    "Gains show up clearly on this task and close relatives; wider transfer is small and debated.",
+  "nb.about3":
+    "Staying accurate at a low level beats pushing to a high one. Move up only when you rarely slip.",
+
+  "nbtip.rehearse.t": "Keep a rolling list",
+  "nbtip.rehearse.b":
+    "Hold just the last two tilts in mind; as each new one lands, drop the oldest.",
+  "nbtip.label.t": "Name each tilt",
+  "nbtip.label.b":
+    "Say “flat, steep, diagonal” to yourself — words are easier to hold than raw images.",
+  "nbtip.restraint.t": "Only tap when sure",
+  "nbtip.restraint.b":
+    "A wrong tap costs as much as a missed one. Skip the guesses.",
+  "nbtip.daily.t": "Short daily sets",
+  "nbtip.daily.b": "A minute or two a day beats a long weekly grind.",
+  "nbtip.rest.t": "Sleep and breaks",
+  "nbtip.rest.b": "Working memory drops sharply when you are tired.",
 
   "result.note":
     "Rough guide — the screen is not calibrated. Your trend over time matters more than one score.",
