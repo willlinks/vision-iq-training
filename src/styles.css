@@ -420,6 +420,14 @@ button[aria-pressed="true"] {
   .nback-combo {
     animation: nback-combo-fade 700ms ease-out forwards;
   }
+
+  .nback-timer-ring {
+    display: none;
+  }
+
+  .nback-timer-arc {
+    transition: none;
+  }
 }
 
 @keyframes nback-combo-fade {
@@ -485,6 +493,7 @@ button[aria-pressed="true"] {
 }
 
 .nback-patch {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -506,6 +515,78 @@ button[aria-pressed="true"] {
 
 .nback-patch.miss {
   outline-color: #c65b5b;
+}
+
+.nback-prompt {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Countdown chip, upper-right corner of the patch. */
+.nback-timer {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.nback-timer-ring {
+  position: absolute;
+  inset: 2px;
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
+  transform: rotate(-90deg);
+}
+
+.nback-timer-track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.25);
+  stroke-width: 3;
+}
+
+.nback-timer-arc {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+.nback-timer-num {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.nback-choice {
+  display: flex;
+  gap: 12px;
+  width: min(20rem, 86vw);
+}
+
+.nback-choice button {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+}
+
+.nback-choice button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.nback-no {
+  background: transparent;
+  border: 1px solid var(--fg);
 }
 
 .nback-match {

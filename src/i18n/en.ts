@@ -8,6 +8,8 @@ export const en = {
   "common.done": "Done",
   "common.runAgain": "Run again",
   "common.next": "Next",
+  "common.yes": "Yes",
+  "common.no": "No",
 
   "lang.switchTo": "日本語",
 
@@ -73,8 +75,10 @@ export const en = {
 
   "nback.heading": "N-back",
   "nback.intro":
-    "Patches appear one at a time, each tilted a different way. Tap Match whenever the current tilt is the same as the patch two before it.",
+    "Patches appear one at a time, each tilted a different way. For each one, answer before the timer runs out: is its tilt the same as the patch two before it?",
   "nback.match": "Match",
+  "nback.prompt": "Match with 2 back?",
+  "nback.watch": "Remember this one",
   "nback.count": "{n} / {max}",
   "nback.level": "2-back",
   "nback.combo": "×{n}",
@@ -88,6 +92,8 @@ export const en = {
   "nres.faMeaning": "Times you tapped Match on a patch that was not a repeat.",
   "nres.comboName": "Best combo",
   "nres.comboMeaning": "Your longest run of correct calls in a row this round.",
+  "nres.timeoutName": "Ran out of time",
+  "nres.timeoutMeaning": "Patches where the timer expired before you answered.",
   "nres.note":
     "One short round is noisy. Watch whether your accuracy climbs over days.",
   "nb.about1":

@@ -60,8 +60,9 @@ describe("scoreNBack", () => {
   };
 
   it("counts hits, misses, false alarms and correct rejections", () => {
-    const responded = [false, false, true, false, true, false];
-    const s = scoreNBack(responded, seq);
+    // yes on a target, no on a target, yes on a non-target, no on a non-target
+    const answers = [null, null, true, false, true, false];
+    const s = scoreNBack(answers, seq);
     expect(s).toMatchObject({
       scored: 4,
       targets: 2,
@@ -69,20 +70,37 @@ describe("scoreNBack", () => {
       misses: 1,
       falseAlarms: 1,
       correctRejections: 1,
+      noAnswer: 0,
     });
     expect(s.accuracy).toBeCloseTo(0.5);
   });
 
-  it("ignores presses on the first n steps", () => {
-    const responded = [true, true, false, false, false, false];
-    const s = scoreNBack(responded, seq);
+  it("ignores answers on the first n steps", () => {
+    const answers = [true, true, false, false, false, false];
+    const s = scoreNBack(answers, seq);
     expect(s.falseAlarms).toBe(0);
     expect(s.scored).toBe(4);
   });
 
+  it("counts a timeout as incorrect and breaks the streak", () => {
+    // step2 target/timeout, step3 target/yes, step4 non-target/no, step5 non-target/timeout
+    const answers = [null, null, null, true, false, null];
+    const s = scoreNBack(answers, seq);
+    expect(s).toMatchObject({
+      hits: 1,
+      misses: 0,
+      falseAlarms: 0,
+      correctRejections: 1,
+      noAnswer: 2,
+      scored: 4,
+    });
+    expect(s.accuracy).toBeCloseTo(0.5);
+    expect(s.longestStreak).toBe(2);
+  });
+
   it("a perfect run scores accuracy 1", () => {
-    const responded = [false, false, true, true, false, false];
-    const s = scoreNBack(responded, seq);
+    const answers = [null, null, true, true, false, false];
+    const s = scoreNBack(answers, seq);
     expect(s.accuracy).toBe(1);
     expect(s.longestStreak).toBe(4);
   });
@@ -94,9 +112,9 @@ describe("scoreNBack", () => {
       angles: [0, 0, 1, 1, 1, 1, 1, 1, 1, 1],
       isTarget: [false, false, false, true, true, true, true, true, true, true],
     };
-    const responded = [
-      false,
-      false,
+    const answers = [
+      null,
+      null,
       false,
       true,
       true,
@@ -106,6 +124,6 @@ describe("scoreNBack", () => {
       false,
       true,
     ];
-    expect(scoreNBack(responded, streakSeq).longestStreak).toBe(3);
+    expect(scoreNBack(answers, streakSeq).longestStreak).toBe(3);
   });
 });

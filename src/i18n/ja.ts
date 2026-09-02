@@ -10,6 +10,8 @@ export const ja: Record<StringKey, string> = {
   "common.done": "おつかれさまでした",
   "common.runAgain": "もう一度",
   "common.next": "次へ",
+  "common.yes": "はい",
+  "common.no": "いいえ",
 
   "lang.switchTo": "EN",
 
@@ -73,8 +75,10 @@ export const ja: Record<StringKey, string> = {
 
   "nback.heading": "Nバック",
   "nback.intro":
-    "傾きの違う模様が、1つずつ順に出ます。いまの傾きが「2つ前」と同じだと思ったら「一致」をタップしてください。",
+    "傾きの違う模様が、1つずつ順に出ます。それぞれについて、いまの傾きが「2つ前」と同じかどうかを、時間内に答えてください。",
   "nback.match": "一致",
+  "nback.prompt": "2つ前と同じ？",
+  "nback.watch": "この模様を覚えて",
   "nback.count": "{n} / {max}",
   "nback.level": "2つ前",
   "nback.combo": "×{n}",
@@ -88,6 +92,8 @@ export const ja: Record<StringKey, string> = {
   "nres.faMeaning": "一致でない模様に「一致」を押してしまった回数です。",
   "nres.comboName": "最高コンボ",
   "nres.comboMeaning": "今回、続けて正しく判断できた最長の連続数です。",
+  "nres.timeoutName": "時間切れ",
+  "nres.timeoutMeaning": "答える前に時間切れになった回数です。",
   "nres.note":
     "1回の結果はぶれます。日をまたいで正答率が上がっていくかを見てください。",
   "nb.about1":

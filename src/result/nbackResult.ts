@@ -19,29 +19,40 @@ const TIP_KEYS: [StringKey, StringKey][] = [
  * short round is not enough to place on a population range.
  */
 export function buildNBackResult(t: T, score: NBackScore): ResultView {
+  const metrics = [
+    {
+      name: t("nres.correctName"),
+      displayValue: `${score.hits + score.correctRejections} / ${score.scored}`,
+      meaning: t("nres.correctMeaning"),
+    },
+    {
+      name: t("nres.hitsName"),
+      displayValue: `${score.hits} / ${score.targets}`,
+      meaning: t("nres.hitsMeaning"),
+    },
+    {
+      name: t("nres.faName"),
+      displayValue: `${score.falseAlarms}`,
+      meaning: t("nres.faMeaning"),
+    },
+    {
+      name: t("nres.comboName"),
+      displayValue: `${score.longestStreak}`,
+      meaning: t("nres.comboMeaning"),
+    },
+  ];
+
+  // Only worth showing when it actually happened.
+  if (score.noAnswer > 0) {
+    metrics.push({
+      name: t("nres.timeoutName"),
+      displayValue: `${score.noAnswer}`,
+      meaning: t("nres.timeoutMeaning"),
+    });
+  }
+
   return {
-    metrics: [
-      {
-        name: t("nres.correctName"),
-        displayValue: `${score.hits + score.correctRejections} / ${score.scored}`,
-        meaning: t("nres.correctMeaning"),
-      },
-      {
-        name: t("nres.hitsName"),
-        displayValue: `${score.hits} / ${score.targets}`,
-        meaning: t("nres.hitsMeaning"),
-      },
-      {
-        name: t("nres.faName"),
-        displayValue: `${score.falseAlarms}`,
-        meaning: t("nres.faMeaning"),
-      },
-      {
-        name: t("nres.comboName"),
-        displayValue: `${score.longestStreak}`,
-        meaning: t("nres.comboMeaning"),
-      },
-    ],
+    metrics,
     youLabel: t("result.you"),
     typicalLabel: t("result.typical"),
     note: t("nres.note"),

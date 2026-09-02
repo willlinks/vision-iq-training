@@ -1,8 +1,8 @@
 /**
  * N-back working-memory task, rendered with Gabor patches. A stream of patches
  * appears one at a time; the only thing that varies is orientation, drawn from a
- * small fixed pool of angles. The player flags a patch whose angle matches the
- * one `n` steps earlier.
+ * small fixed pool of angles. For each patch the player answers yes/no: does its
+ * angle match the one `n` steps earlier?
  *
  * Pure — no DOM. An RNG is injected so sequences are reproducible in tests.
  */
@@ -72,6 +72,8 @@ export interface NBackScore {
   misses: number;
   falseAlarms: number;
   correctRejections: number;
+  /** Scored steps where the timer expired before the player answered. */
+  noAnswer: number;
   /** (hits + correct rejections) / scored. */
   accuracy: number;
   /** Longest run of consecutive correct scored steps (hits or correct rejections). */
@@ -79,30 +81,46 @@ export interface NBackScore {
 }
 
 /**
- * Score a run. `responded[i]` is whether the player flagged step i as a match.
- * The first n steps are not scored.
+ * Score a run. `answers[i]` is the player's yes/no for step i — `true` = "yes,
+ * it matches", `false` = "no", `null`/`undefined` = ran out of time. The first n
+ * steps are not scored. A timeout is always incorrect and breaks the streak.
  */
 export function scoreNBack(
-  responded: boolean[],
+  answers: (boolean | null | undefined)[],
   seq: NBackSequence,
 ): NBackScore {
   let hits = 0;
   let misses = 0;
   let falseAlarms = 0;
   let correctRejections = 0;
+  let noAnswer = 0;
+  let targets = 0;
   let current = 0;
   let longestStreak = 0;
 
   for (let i = seq.n; i < seq.angles.length; i++) {
-    const said = responded[i] ?? false;
-    const correct = seq.isTarget[i] ? said : !said;
-    if (seq.isTarget[i]) {
-      if (said) hits++;
-      else misses++;
+    const a = answers[i] ?? null;
+    if (seq.isTarget[i]) targets++;
+
+    let correct = false;
+    if (a === null) {
+      noAnswer++;
+    } else if (seq.isTarget[i]) {
+      if (a) {
+        hits++;
+        correct = true;
+      } else {
+        misses++;
+      }
     } else {
-      if (said) falseAlarms++;
-      else correctRejections++;
+      if (a) {
+        falseAlarms++;
+      } else {
+        correctRejections++;
+        correct = true;
+      }
     }
+
     if (correct) {
       current++;
       if (current > longestStreak) longestStreak = current;
@@ -111,14 +129,15 @@ export function scoreNBack(
     }
   }
 
-  const scored = hits + misses + falseAlarms + correctRejections;
+  const scored = hits + misses + falseAlarms + correctRejections + noAnswer;
   return {
     scored,
-    targets: hits + misses,
+    targets,
     hits,
     misses,
     falseAlarms,
     correctRejections,
+    noAnswer,
     accuracy: scored === 0 ? 0 : (hits + correctRejections) / scored,
     longestStreak,
   };

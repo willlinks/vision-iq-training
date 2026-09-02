@@ -288,12 +288,18 @@ wrong pick got wrong; auto-advances (fast on a hit, brief hold on a miss). **Ope
 legibility of the Gabor-textured cells — check before building more puzzle variety.**
 
 N-back task (Phase 3, second): `src/lib/nback.ts` seeded sequence generator + `scoreNBack`
-(hits / misses / false alarms / correct rejections). 2-back over a 6-angle orientation pool,
-22 patches (2 warm-up + 20 scored), ~32% target rate, 1.8s on / 0.7s gap. `src/tasks/NBack.tsx`
-streams patches with a single Match button and a green/red press flash; presses accumulate in
-a ref so a tap never restarts the step timers. Result = correct calls + repeats caught +
-false alarms (no scale). Next: block rotation, odd-one-out, then the session flow that chains
-warm-up → vision block → cognitive block → composite result.
+(hits / misses / false alarms / correct rejections / no-answer + longestStreak). 2-back over a
+6-angle orientation pool, 22 patches (2 warm-up + 20 scored), ~32% target rate.
+`src/tasks/NBack.tsx` shows one patch at a time with a **Yes / No** forced choice against a
+3s countdown (ring + number chip, upper-right of the patch); advance is on answer, a timeout
+scores as incorrect. First 2 patches are warm-up ("Remember this one", buttons disabled).
+Answers accumulate in a ref so a tap never restarts the step timers; per-step state machine
+`watch → await → feedback`. Correct steps build a streak that pops a rising "×N" combo number
+(grows with the count) out of the patch; an error resets it. Result = correct calls + repeats
+caught + false alarms + best combo (+ ran-out-of-time when >0), no scale. The 3s window is a
+`WINDOW_MS` constant, meant to shrink with stage level later. Next: block rotation,
+odd-one-out, then the session flow that chains warm-up → vision block → cognitive block →
+composite result.
 
 ## Phased build
 
