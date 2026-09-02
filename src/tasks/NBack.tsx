@@ -18,6 +18,11 @@ type Flash = "hit" | "miss" | null;
 const STIM_MS = 1800;
 const GAP_MS = 700;
 
+/** Combo popups start once the correct-step streak reaches this. */
+const COMBO_MIN = 3;
+/** Popup lifetime — keep in sync with the nback-combo animation in styles.css. */
+const COMBO_MS = 950;
+
 interface Props {
   onExit: () => void;
 }
@@ -53,10 +58,15 @@ export function NBack({ onExit }: Props) {
   const [flash, setFlash] = useState<Flash>(null);
   const [score, setScore] = useState<NBackScore | null>(null);
   const [size] = useState(patchSize);
+  const [combo, setCombo] = useState<{ n: number; id: number } | null>(null);
 
   // Presses accumulate here, not in state: nothing in render reads them, and
   // keeping them out of state avoids restarting the step timers on every tap.
   const respondedRef = useRef<boolean[]>([]);
+  // Running count of consecutive correct scored steps, and a monotonic id so a
+  // repeat of the same combo number still retriggers the CSS animation.
+  const streakRef = useRef(0);
+  const comboIdRef = useRef(0);
 
   const total = DEFAULT_NBACK.length - DEFAULT_NBACK.n;
 
@@ -66,6 +76,20 @@ export function NBack({ onExit }: Props) {
       setScore(scoreNBack(respondedRef.current, seq));
       setPhase("done");
       return;
+    }
+    // The step before this one has now fully elapsed — judge it for the combo.
+    const prev = step - 1;
+    if (prev >= seq.n && prev < seq.angles.length) {
+      const said = respondedRef.current[prev] ?? false;
+      const ok = seq.isTarget[prev] ? said : !said;
+      if (ok) {
+        streakRef.current += 1;
+        if (streakRef.current >= COMBO_MIN) {
+          setCombo({ n: streakRef.current, id: comboIdRef.current++ });
+        }
+      } else {
+        streakRef.current = 0;
+      }
     }
     setVisible(true);
     setFlash(null);
@@ -83,12 +107,20 @@ export function NBack({ onExit }: Props) {
     return () => window.clearTimeout(id);
   }, [flash]);
 
+  useEffect(() => {
+    if (!combo) return;
+    const id = window.setTimeout(() => setCombo(null), COMBO_MS);
+    return () => window.clearTimeout(id);
+  }, [combo]);
+
   const begin = useCallback(() => {
     const s = generateNBackSequence(DEFAULT_NBACK, Math.random);
     respondedRef.current = new Array(s.angles.length).fill(false);
+    streakRef.current = 0;
     setSeq(s);
     setScore(null);
     setFlash(null);
+    setCombo(null);
     setStep(0);
     setPhase("run");
   }, []);
@@ -145,15 +177,29 @@ export function NBack({ onExit }: Props) {
         <span>{t("nback.level")}</span>
       </div>
 
-      <div
-        className={`nback-patch${flash ? ` ${flash}` : ""}`}
-        style={{ width: size, height: size }}
-      >
-        {showPatch && (
-          <GaborView
-            params={patchParams(seq.angles[step]!, size)}
-            size={size}
-          />
+      <div className="nback-stage">
+        <div
+          className={`nback-patch${flash ? ` ${flash}` : ""}`}
+          style={{ width: size, height: size }}
+        >
+          {showPatch && (
+            <GaborView
+              params={patchParams(seq.angles[step]!, size)}
+              size={size}
+            />
+          )}
+        </div>
+        {combo && (
+          <div
+            key={combo.id}
+            className="nback-combo"
+            aria-hidden="true"
+            style={{
+              fontSize: `${Math.min(2.4 + (combo.n - COMBO_MIN) * 0.5, 6)}rem`,
+            }}
+          >
+            {t("nback.combo", { n: combo.n })}
+          </div>
         )}
       </div>
 

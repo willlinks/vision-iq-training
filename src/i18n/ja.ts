@@ -77,6 +77,7 @@ export const ja: Record<StringKey, string> = {
   "nback.match": "一致",
   "nback.count": "{n} / {max}",
   "nback.level": "2つ前",
+  "nback.combo": "×{n}",
 
   "nres.correctName": "正しい判断",
   "nres.correctMeaning":
@@ -85,6 +86,8 @@ export const ja: Record<StringKey, string> = {
   "nres.hitsMeaning": "本当に一致だったもののうち、印を付けられた割合です。",
   "nres.faName": "早とちり",
   "nres.faMeaning": "一致でない模様に「一致」を押してしまった回数です。",
+  "nres.comboName": "最高コンボ",
+  "nres.comboMeaning": "今回、続けて正しく判断できた最長の連続数です。",
   "nres.note":
     "1回の結果はぶれます。日をまたいで正答率が上がっていくかを見てください。",
   "nb.about1":

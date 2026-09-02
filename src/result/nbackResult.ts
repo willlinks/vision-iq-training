@@ -36,6 +36,11 @@ export function buildNBackResult(t: T, score: NBackScore): ResultView {
         displayValue: `${score.falseAlarms}`,
         meaning: t("nres.faMeaning"),
       },
+      {
+        name: t("nres.comboName"),
+        displayValue: `${score.longestStreak}`,
+        meaning: t("nres.comboMeaning"),
+      },
     ],
     youLabel: t("result.you"),
     typicalLabel: t("result.typical"),

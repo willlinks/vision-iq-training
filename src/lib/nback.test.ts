@@ -82,6 +82,30 @@ describe("scoreNBack", () => {
 
   it("a perfect run scores accuracy 1", () => {
     const responded = [false, false, true, true, false, false];
-    expect(scoreNBack(responded, seq).accuracy).toBe(1);
+    const s = scoreNBack(responded, seq);
+    expect(s.accuracy).toBe(1);
+    expect(s.longestStreak).toBe(4);
+  });
+
+  it("reports the longest run of correct steps, not the final one", () => {
+    // 8 scored steps: correct, correct, correct, WRONG, correct, correct, WRONG, correct
+    const streakSeq: NBackSequence = {
+      n: 2,
+      angles: [0, 0, 1, 1, 1, 1, 1, 1, 1, 1],
+      isTarget: [false, false, false, true, true, true, true, true, true, true],
+    };
+    const responded = [
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      true,
+      true,
+      false,
+      true,
+    ];
+    expect(scoreNBack(responded, streakSeq).longestStreak).toBe(3);
   });
 });

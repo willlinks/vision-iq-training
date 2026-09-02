@@ -77,6 +77,7 @@ export const en = {
   "nback.match": "Match",
   "nback.count": "{n} / {max}",
   "nback.level": "2-back",
+  "nback.combo": "×{n}",
 
   "nres.correctName": "Correct calls",
   "nres.correctMeaning":
@@ -85,6 +86,8 @@ export const en = {
   "nres.hitsMeaning": "Of all the true repeats, how many you flagged.",
   "nres.faName": "False alarms",
   "nres.faMeaning": "Times you tapped Match on a patch that was not a repeat.",
+  "nres.comboName": "Best combo",
+  "nres.comboMeaning": "Your longest run of correct calls in a row this round.",
   "nres.note":
     "One short round is noisy. Watch whether your accuracy climbs over days.",
   "nb.about1":

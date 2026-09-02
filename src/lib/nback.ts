@@ -74,6 +74,8 @@ export interface NBackScore {
   correctRejections: number;
   /** (hits + correct rejections) / scored. */
   accuracy: number;
+  /** Longest run of consecutive correct scored steps (hits or correct rejections). */
+  longestStreak: number;
 }
 
 /**
@@ -88,15 +90,24 @@ export function scoreNBack(
   let misses = 0;
   let falseAlarms = 0;
   let correctRejections = 0;
+  let current = 0;
+  let longestStreak = 0;
 
   for (let i = seq.n; i < seq.angles.length; i++) {
     const said = responded[i] ?? false;
+    const correct = seq.isTarget[i] ? said : !said;
     if (seq.isTarget[i]) {
       if (said) hits++;
       else misses++;
     } else {
       if (said) falseAlarms++;
       else correctRejections++;
+    }
+    if (correct) {
+      current++;
+      if (current > longestStreak) longestStreak = current;
+    } else {
+      current = 0;
     }
   }
 
@@ -109,5 +120,6 @@ export function scoreNBack(
     falseAlarms,
     correctRejections,
     accuracy: scored === 0 ? 0 : (hits + correctRejections) / scored,
+    longestStreak,
   };
 }
