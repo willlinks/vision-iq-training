@@ -11,8 +11,11 @@ import { useT } from "../i18n";
 import type { StringKey } from "../i18n/en";
 import { ResultPanel } from "../result/ResultPanel";
 import { buildMatrixResult } from "../result/matrixResult";
+import { ComboPopup } from "./ComboPopup";
+import { useCombo } from "./useCombo";
+import { ReadyScreen } from "./ReadyScreen";
 
-type Phase = "intro" | "puzzle" | "reveal" | "done";
+type Phase = "intro" | "ready" | "puzzle" | "reveal" | "done";
 
 const PUZZLES = 6;
 
@@ -55,6 +58,8 @@ export function MatrixReasoning({ onExit }: Props) {
   const [now, setNow] = useState(0);
   const [totalMs, setTotalMs] = useState(0);
 
+  const { current: combo, record: recordCombo, reset: resetCombo } = useCombo();
+
   const k = size / REF_CELL;
   const running = phase === "puzzle" || phase === "reveal";
 
@@ -71,15 +76,18 @@ export function MatrixReasoning({ onExit }: Props) {
     setPhase("puzzle");
   }, []);
 
-  const begin = useCallback(() => {
+  const begin = useCallback(() => setPhase("ready"), []);
+
+  const startRun = useCallback(() => {
     setIndex(0);
     setCorrect(0);
     setTimes([]);
     setTotalMs(0);
+    resetCombo();
     setStartedAt(performance.now());
     setNow(performance.now());
     startPuzzle(0);
-  }, [startPuzzle]);
+  }, [startPuzzle, resetCombo]);
 
   const choose = useCallback(
     (optionIndex: number) => {
@@ -88,9 +96,10 @@ export function MatrixReasoning({ onExit }: Props) {
       setPicked(optionIndex);
       setCorrect((c) => c + (hit ? 1 : 0));
       setTimes((ts) => [...ts, performance.now() - shownAt]);
+      recordCombo(hit);
       setPhase("reveal");
     },
-    [phase, puzzle, shownAt],
+    [phase, puzzle, shownAt, recordCombo],
   );
 
   const advance = useCallback(() => {
@@ -116,7 +125,10 @@ export function MatrixReasoning({ onExit }: Props) {
   const missNote = useMemo(() => {
     if (phase !== "reveal" || picked == null || !puzzle) return null;
     if (picked === puzzle.answerIndex) return null;
-    const dims = describeMiss(puzzle.options[picked]!, puzzle.grid[8]!);
+    const dims = describeMiss(
+      puzzle.options[picked]!,
+      puzzle.grid[puzzle.blankIndex]!,
+    );
     if (dims.length === 0) return t("matrix.missVague");
     const names = dims
       .map((d) => t(`matrix.dim.${d}` as StringKey))
@@ -148,6 +160,10 @@ export function MatrixReasoning({ onExit }: Props) {
     );
   }
 
+  if (phase === "ready") {
+    return <ReadyScreen onReady={startRun} />;
+  }
+
   if (phase === "done") {
     return (
       <div className="screen scroll">
@@ -174,41 +190,44 @@ export function MatrixReasoning({ onExit }: Props) {
         <span>{clock(now - startedAt)}</span>
       </div>
 
-      <div
-        className="matrix-grid"
-        style={{ gridTemplateColumns: `repeat(3, ${size}px)` }}
-      >
-        {puzzle.grid.map((cell, i) => {
-          if (i === 8) {
+      <div className="combo-stage">
+        <div
+          className="matrix-grid"
+          style={{ gridTemplateColumns: `repeat(3, ${size}px)` }}
+        >
+          {puzzle.grid.map((cell, i) => {
+            if (i === puzzle.blankIndex) {
+              return (
+                <div
+                  className={`matrix-cell blank${revealing ? " correct" : ""}`}
+                  key={i}
+                  style={{ width: size, height: size }}
+                >
+                  {revealing ? (
+                    <div className="matrix-snap">
+                      <GaborView
+                        params={scaleGabor(puzzle.grid[puzzle.blankIndex]!, k)}
+                        size={size}
+                      />
+                    </div>
+                  ) : (
+                    <span className="matrix-blank">?</span>
+                  )}
+                </div>
+              );
+            }
             return (
               <div
-                className={`matrix-cell blank${revealing ? " correct" : ""}`}
+                className="matrix-cell"
                 key={i}
                 style={{ width: size, height: size }}
               >
-                {revealing ? (
-                  <div className="matrix-snap">
-                    <GaborView
-                      params={scaleGabor(puzzle.grid[8]!, k)}
-                      size={size}
-                    />
-                  </div>
-                ) : (
-                  <span className="matrix-blank">?</span>
-                )}
+                <GaborView params={scaleGabor(cell, k)} size={size} />
               </div>
             );
-          }
-          return (
-            <div
-              className="matrix-cell"
-              key={i}
-              style={{ width: size, height: size }}
-            >
-              <GaborView params={scaleGabor(cell, k)} size={size} />
-            </div>
-          );
-        })}
+          })}
+        </div>
+        <ComboPopup combo={combo} />
       </div>
 
       {wrong && <p className="muted matrix-note">{missNote}</p>}

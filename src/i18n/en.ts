@@ -10,6 +10,9 @@ export const en = {
   "common.next": "Next",
   "common.yes": "Yes",
   "common.no": "No",
+  "common.ready": "Hold the device about arm's length away.\nAre you ready?",
+
+  "combo.x": "×{n}",
 
   "lang.switchTo": "日本語",
 
@@ -38,7 +41,7 @@ export const en = {
 
   "matrix.heading": "Matrix reasoning",
   "matrix.intro":
-    "Every grid follows a hidden rule across its rows and columns. Pick the patch that completes the bottom-right cell.",
+    "Every grid follows a hidden rule across its rows and columns. Pick the patch that belongs in the empty cell.",
   "matrix.progress": "{n} / {max}",
   "matrix.score": "correct {n}/{max}",
   "matrix.answerShown": "The filled cell is the correct answer.",
@@ -81,7 +84,6 @@ export const en = {
   "nback.watch": "Remember this one",
   "nback.count": "{n} / {max}",
   "nback.level": "2-back",
-  "nback.combo": "×{n}",
 
   "nres.correctName": "Correct calls",
   "nres.correctMeaning":

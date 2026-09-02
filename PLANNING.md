@@ -281,11 +281,14 @@ patch geometry, and a real inter-trial mask (currently a plain blank).
 
 Matrix reasoning task (Phase 3, first): `src/lib/matrix.ts` seeded generator — 3×3 grid,
 1–2 rules over orientation / wavelength / contrast, difficulty ramps across 6 puzzles;
-distractors are real one-axis cells + over/undershoot. `scaleGabor()` renders 96px-reference
-params at any cell size. Result = accuracy + median time (no scale). Reveal snaps the chosen
-patch into the blank, keeps the correct one on screen (green) and names which parameter a
-wrong pick got wrong; auto-advances (fast on a hit, brief hold on a miss). **Open: on-device
-legibility of the Gabor-textured cells — check before building more puzzle variety.**
+distractors are real one-axis cells + over/undershoot. The blank (`puzzle.blankIndex`) is a
+random edge-midpoint or centre cell — never a corner (corners need the hardest two-way
+extrapolation). `scaleGabor()` renders 96px-reference params at any cell size. Result =
+accuracy + median time (no scale). Reveal snaps the chosen patch into the blank, keeps the
+correct one on screen (green) and names which parameter a wrong pick got wrong;
+auto-advances (fast on a hit, brief hold on a miss). Correct puzzles build the shared "×N"
+combo streak (see below). **Open: on-device legibility of the Gabor-textured cells — check
+before building more puzzle variety.**
 
 N-back task (Phase 3, second): `src/lib/nback.ts` seeded sequence generator + `scoreNBack`
 (hits / misses / false alarms / correct rejections / no-answer + longestStreak). 2-back over a
@@ -294,10 +297,15 @@ N-back task (Phase 3, second): `src/lib/nback.ts` seeded sequence generator + `s
 3s countdown (ring + number chip, upper-right of the patch); advance is on answer, a timeout
 scores as incorrect. First 2 patches are warm-up ("Remember this one", buttons disabled).
 Answers accumulate in a ref so a tap never restarts the step timers; per-step state machine
-`watch → await → feedback`. Correct steps build a streak that pops a rising "×N" combo number
-(grows with the count) out of the patch; an error resets it. Result = correct calls + repeats
-caught + false alarms + best combo (+ ran-out-of-time when >0), no scale. The 3s window is a
-`WINDOW_MS` constant, meant to shrink with stage level later. Next: block rotation,
+`watch → await → feedback`. Result = correct calls + repeats caught + false alarms + best
+combo (+ ran-out-of-time when >0), no scale. The 3s window is a `WINDOW_MS` constant, meant
+to shrink with stage level later.
+
+Shared task pieces (`src/tasks/`): `useCombo` + `<ComboPopup>` — a streak of correct answers
+pops a rising "×N" number (font grows with the count) out of the game's focal element; any
+wrong answer resets it. Used by N-back and matrix; wrap the focal element in `.combo-stage`.
+`<ReadyScreen>` — a 2s "hold the device back, are you ready?" beat between Start and the first
+trial, via a `"ready"` phase in each task (contrast, matrix, N-back). Next: block rotation,
 odd-one-out, then the session flow that chains warm-up → vision block → cognitive block →
 composite result.
 

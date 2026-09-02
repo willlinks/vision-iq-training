@@ -12,6 +12,10 @@ export const ja: Record<StringKey, string> = {
   "common.next": "次へ",
   "common.yes": "はい",
   "common.no": "いいえ",
+  "common.ready":
+    "画面から腕をのばしたくらい離して持ってください。\n準備はいいですか？",
+
+  "combo.x": "×{n}",
 
   "lang.switchTo": "EN",
 
@@ -40,7 +44,7 @@ export const ja: Record<StringKey, string> = {
 
   "matrix.heading": "行列推理",
   "matrix.intro":
-    "どのマス目も、行と列にそって隠れた規則で変化しています。右下の空欄に入る模様を選んでください。",
+    "どのマス目も、行と列にそって隠れた規則で変化しています。空欄に入る模様を選んでください。",
   "matrix.progress": "{n} / {max}",
   "matrix.score": "正解 {n}/{max}",
   "matrix.answerShown": "空欄に入る正解は、この模様です。",
@@ -81,7 +85,6 @@ export const ja: Record<StringKey, string> = {
   "nback.watch": "この模様を覚えて",
   "nback.count": "{n} / {max}",
   "nback.level": "2つ前",
-  "nback.combo": "×{n}",
 
   "nres.correctName": "正しい判断",
   "nres.correctMeaning":

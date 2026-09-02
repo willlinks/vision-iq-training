@@ -9,8 +9,10 @@ import { GaborView } from "../render/GaborView";
 import { useT } from "../i18n";
 import { ResultPanel } from "../result/ResultPanel";
 import { buildContrastResult } from "../result/contrastResult";
+import { ReadyScreen } from "./ReadyScreen";
 
-type Phase = "intro" | "iti" | "fixation" | "stimulus" | "response" | "done";
+type Phase =
+  "intro" | "ready" | "iti" | "fixation" | "stimulus" | "response" | "done";
 type Side = "left" | "right";
 
 const FIXATION_MS = 450;
@@ -128,13 +130,17 @@ export function ContrastDetection({ onExit }: Props) {
 
   const begin = useCallback(() => {
     clearTimers();
+    setPhase("ready");
+  }, [clearTimers]);
+
+  const startRun = useCallback(() => {
     staircaseRef.current = new Staircase(TASK_STAIRCASE);
     setTrialN(0);
     setReversals(0);
     setResult(null);
     setLastCorrect(null);
     startTrial();
-  }, [clearTimers, startTrial]);
+  }, [startTrial]);
 
   const answer = useCallback(
     (choice: Side | "unsure") => {
@@ -173,6 +179,10 @@ export function ContrastDetection({ onExit }: Props) {
         <button onClick={onExit}>{t("common.back")}</button>
       </div>
     );
+  }
+
+  if (phase === "ready") {
+    return <ReadyScreen onReady={startRun} />;
   }
 
   if (phase === "done") {

@@ -26,12 +26,22 @@ describe("generateMatrixPuzzle", () => {
     expect(p.options).toHaveLength(6);
   });
 
-  it("the answer option matches the blank (bottom-right) cell", () => {
+  it("the answer option matches the blank cell", () => {
     for (let seed = 1; seed <= 40; seed++) {
       const p = generateMatrixPuzzle(seed % 8, mulberry32(seed));
       expect(p.answerIndex).toBeGreaterThanOrEqual(0);
-      expect(k(p.options[p.answerIndex]!)).toBe(k(p.grid[8]!));
+      expect(k(p.options[p.answerIndex]!)).toBe(k(p.grid[p.blankIndex]!));
     }
+  });
+
+  it("the blank is a random non-corner cell", () => {
+    const seen = new Set<number>();
+    for (let seed = 1; seed <= 40; seed++) {
+      const p = generateMatrixPuzzle(seed % 8, mulberry32(seed));
+      expect([1, 3, 4, 5, 7]).toContain(p.blankIndex);
+      seen.add(p.blankIndex);
+    }
+    expect(seen.size).toBeGreaterThan(1);
   });
 
   it("all six options are visually distinct", () => {
@@ -54,6 +64,7 @@ describe("generateMatrixPuzzle", () => {
     const b = generateMatrixPuzzle(4, mulberry32(99));
     expect(a.options.map(k)).toEqual(b.options.map(k));
     expect(a.answerIndex).toBe(b.answerIndex);
+    expect(a.blankIndex).toBe(b.blankIndex);
   });
 
   it("keeps every parameter within renderable limits", () => {

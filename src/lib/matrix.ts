@@ -1,7 +1,8 @@
 /**
  * Gabor matrix reasoning: a 3x3 grid of Gabor patches where 1-2 parameters
- * change by a fixed step along the rows and/or columns. The bottom-right cell
- * is blank; the player picks it from six options.
+ * change by a fixed step along the rows and/or columns. One cell is blank; the
+ * player picks it from six options. The blank is a random edge-midpoint or the
+ * centre (never a corner — corners need the hardest two-way extrapolation).
  *
  * Pure — no DOM. An RNG is injected so puzzles are reproducible in tests.
  * Params are authored for a 96 px reference cell (see scaleGabor at render time).
@@ -12,8 +13,10 @@ export type MatrixDim = "theta" | "wavelength" | "contrast";
 export type Axis = "row" | "col";
 
 export interface MatrixPuzzle {
-  /** 9 cells, row-major. Index 8 (bottom-right) is the answer. */
+  /** 9 cells, row-major. `grid[blankIndex]` is the cell the player must find. */
   grid: GaborParams[];
+  /** Which grid cell is shown blank (one of 1, 3, 4, 5, 7). */
+  blankIndex: number;
   /** 6 options, shuffled. */
   options: GaborParams[];
   /** Index into `options` of the correct cell. */
@@ -21,6 +24,9 @@ export interface MatrixPuzzle {
 }
 
 const REF_CELL = 96;
+
+/** Candidate blank cells: the four edge midpoints and the centre, never a corner. */
+const BLANK_CELLS = [1, 3, 4, 5, 7];
 
 const BASE: GaborParams = {
   ...DEFAULT_GABOR,
@@ -127,7 +133,10 @@ export function generateMatrixPuzzle(
   for (let r = 0; r < 3; r++)
     for (let c = 0; c < 3; c++) grid.push(cellParams(base, rules, r, c));
 
-  const answer = grid[8]!;
+  const blankIndex = pick(rng, BLANK_CELLS);
+  const br = Math.floor(blankIndex / 3);
+  const bc = blankIndex % 3;
+  const answer = grid[blankIndex]!;
   const rowRule = rules.find((x) => x.axis === "row");
   const colRule = rules.find((x) => x.axis === "col");
 
@@ -147,10 +156,11 @@ export function generateMatrixPuzzle(
   }
 
   if (!diff.subtleDistractors) {
-    // "Applied only one axis" — real grid cells, a classic Raven distractor.
-    if (rowRule) add(grid[2]!); // bottom-left: row rule only
-    if (colRule) add(grid[6]!); // top-right: col rule only
-    add(grid[4]!); // centre cell
+    // Real grid cells that share the blank's row or column but stop short of its
+    // full rule progression — the classic "applied only one axis" Raven trap.
+    if (rowRule && br > 0) add(grid[bc]!); // same column, top row
+    if (colRule && bc > 0) add(grid[br * 3]!); // same row, first column
+    if (blankIndex !== 4) add(grid[4]!); // centre cell
   }
 
   // Dedupe, keeping the answer first.
@@ -181,7 +191,7 @@ export function generateMatrixPuzzle(
   const options = shuffle(rng, distinct.slice(0, 6));
   const answerIndex = options.findIndex((p) => key(p) === key(answer));
 
-  return { grid, options, answerIndex };
+  return { grid, blankIndex, options, answerIndex };
 }
 
 /** Circular distance between two orientations (π-periodic). */
