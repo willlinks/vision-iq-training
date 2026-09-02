@@ -12,27 +12,25 @@ import { useT } from "../i18n";
 import { ResultPanel } from "../result/ResultPanel";
 import { buildNBackResult } from "../result/nbackResult";
 
+/* ---------- timing (ms) ---------- */
+const WINDOW_MS = 3000; // time allowed to answer a scored patch
+const WATCH_MS = 1400; // how long a warm-up patch (no 2-back yet) holds
+const FEEDBACK_MS = 500; // hit / miss flash before the next patch
+
+/* ---------- combo popup ---------- */
+const COMBO_MIN = 3; // shortest streak that pops a "×N"
+const COMBO_MS = 950; // popup lifetime — keep in sync with @keyframes nback-combo
+
 type Phase = "intro" | "run" | "done";
+/** What the on-screen patch is doing right now. */
+type StepMode = "watch" | "await" | "feedback";
 type Flash = "hit" | "miss" | null;
-/** Within a run step: watch a warm-up patch, await an answer, show feedback. */
-type StepPhase = "watch" | "await" | "feedback";
-
-/** Seconds allowed to answer a scored patch. Will vary by stage level later. */
-const WINDOW_MS = 3000;
-/** How long a warm-up patch (no 2-back yet) stays up before moving on. */
-const WATCH_MS = 1400;
-/** Hit/miss flash after an answer before the next patch. */
-const FEEDBACK_MS = 500;
-
-/** Combo popups start once the correct-step streak reaches this. */
-const COMBO_MIN = 3;
-/** Popup lifetime — keep in sync with the nback-combo animation in styles.css. */
-const COMBO_MS = 950;
 
 interface Props {
   onExit: () => void;
 }
 
+/** Patch size scales with viewport width, clamped so it always fits. */
 function patchSize(): number {
   const w = typeof window !== "undefined" ? window.innerWidth : 360;
   return Math.round(Math.min(Math.max(w * 0.62, 200), 300));
@@ -49,47 +47,63 @@ function patchParams(theta: number, size: number): GaborParams {
   };
 }
 
+/** Font size for the "×N" popup — grows with the streak, capped. */
+function comboFontRem(n: number): number {
+  return Math.min(2.4 + (n - COMBO_MIN) * 0.5, 6);
+}
+
 /**
- * 2-back working memory. Gabor patches stream past one at a time, varying only
- * in orientation. For each patch the player answers Yes / No — is this tilt the
- * same as the one two patches back? — against a countdown; running out of time
- * counts as wrong. The first two patches are warm-up (no answer possible). A
- * short green/red flash and a rising combo number reward a correct run.
+ * 2-back working memory, one Gabor patch at a time — only the orientation varies.
+ * For each scored patch the player answers Yes / No against a countdown ("same
+ * tilt as two patches back?"); the timer running out counts as wrong. The first
+ * two patches are warm-up. A green / red flash and a rising "×N" combo reward a
+ * correct run.
+ *
+ * The run is a loop over `step`, and every transition is a timer:
+ *
+ *   enter step i ─┬─ i ≥ length ............................ score → "done"
+ *                 ├─ warm-up  → mode "watch"  ──WATCH_MS───► step i+1
+ *                 └─ scored   → mode "await"  ──┬─ Yes / No tap ──┐
+ *                                               └─ WINDOW_MS timeout ─► resolve()
+ *   resolve() ── record answer, update combo ── mode "feedback" ──FEEDBACK_MS──► step i+1
+ *
+ * Two effects run the machine: one reacts to entering a step, one advances out of
+ * "feedback". Each owns its own timeout and cleans it up, so changing `step`
+ * (or unmounting) cancels whatever was pending.
  */
 export function NBack({ onExit }: Props) {
   const t = useT();
+
   const [phase, setPhase] = useState<Phase>("intro");
   const [seq, setSeq] = useState<NBackSequence | null>(null);
   const [step, setStep] = useState(-1);
-  const [stepPhase, setStepPhase] = useState<StepPhase>("await");
-  const [visible, setVisible] = useState(false);
+  const [mode, setMode] = useState<StepMode>("await");
   const [flash, setFlash] = useState<Flash>(null);
   const [remainingMs, setRemainingMs] = useState(WINDOW_MS);
+  const [combo, setCombo] = useState<{ n: number; id: number } | null>(null);
   const [score, setScore] = useState<NBackScore | null>(null);
   const [size] = useState(patchSize);
-  const [combo, setCombo] = useState<{ n: number; id: number } | null>(null);
 
-  // Answers accumulate here, not in state: nothing in render reads them, and
-  // keeping them out of state avoids restarting the step timers on every tap.
-  // true = "yes", false = "no", null = ran out of time.
+  // Answers live in a ref, not state: render never reads them, and a tap must not
+  // restart the step timers. true = "yes", false = "no", null = timed out.
   const answersRef = useRef<(boolean | null)[]>([]);
-  // Guards against a double resolve (button tap racing the deadline).
-  const resolvedRef = useRef(false);
-  // Running count of consecutive correct scored steps, and a monotonic id so a
-  // repeat of the same combo number still retriggers the CSS animation.
-  const streakRef = useRef(0);
-  const comboIdRef = useRef(0);
+  const resolvedRef = useRef(false); // current step already resolved? (tap vs. timeout)
+  const streakRef = useRef(0); // consecutive correct scored steps
+  const comboIdRef = useRef(0); // bump so a repeated "×N" still retriggers the animation
 
   const total = DEFAULT_NBACK.length - DEFAULT_NBACK.n;
 
+  /** Record an answer for the current step and move to the feedback flash. */
   const resolve = useCallback(
     (answer: boolean | null) => {
       if (!seq || resolvedRef.current) return;
       if (step < seq.n || step >= seq.angles.length) return;
       resolvedRef.current = true;
       answersRef.current[step] = answer;
-      const ok = answer !== null && (seq.isTarget[step] ? answer : !answer);
-      if (ok) {
+
+      const correct =
+        answer !== null && (seq.isTarget[step] ? answer : !answer);
+      if (correct) {
         streakRef.current += 1;
         if (streakRef.current >= COMBO_MIN) {
           setCombo({ n: streakRef.current, id: comboIdRef.current++ });
@@ -97,14 +111,16 @@ export function NBack({ onExit }: Props) {
       } else {
         streakRef.current = 0;
       }
-      setFlash(ok ? "hit" : "miss");
-      setVisible(false);
-      setStepPhase("feedback");
+      setFlash(correct ? "hit" : "miss");
+      setMode("feedback");
     },
     [seq, step],
   );
 
-  // Drive the step forward and decide what this step is.
+  const next = useCallback(() => setStep((s) => s + 1), []);
+
+  // Entering a step: end the run, or set the mode for this patch (warm-up vs.
+  // scored). The per-mode timing lives in the effects below.
   useEffect(() => {
     if (phase !== "run" || !seq) return;
     if (step >= seq.angles.length) {
@@ -114,25 +130,24 @@ export function NBack({ onExit }: Props) {
     }
     resolvedRef.current = false;
     setFlash(null);
-    setVisible(true);
     if (step < seq.n) {
-      setStepPhase("watch");
+      setMode("watch");
     } else {
       setRemainingMs(WINDOW_MS);
-      setStepPhase("await");
+      setMode("await");
     }
   }, [phase, seq, step]);
 
-  // Warm-up patch: just hold it, then advance.
+  // Warm-up patch: hold it, then move on.
   useEffect(() => {
-    if (phase !== "run" || stepPhase !== "watch") return;
-    const id = window.setTimeout(() => setStep((s) => s + 1), WATCH_MS);
+    if (phase !== "run" || mode !== "watch") return;
+    const id = window.setTimeout(next, WATCH_MS);
     return () => window.clearTimeout(id);
-  }, [phase, stepPhase, step]);
+  }, [phase, mode, next]);
 
-  // Scored patch: run the countdown, resolve as a timeout when it hits zero.
+  // Scored patch: tick the countdown down and time out as a wrong answer.
   useEffect(() => {
-    if (phase !== "run" || stepPhase !== "await") return;
+    if (phase !== "run" || mode !== "await") return;
     const started = performance.now();
     const tick = window.setInterval(() => {
       setRemainingMs(Math.max(0, WINDOW_MS - (performance.now() - started)));
@@ -142,21 +157,16 @@ export function NBack({ onExit }: Props) {
       window.clearInterval(tick);
       window.clearTimeout(deadline);
     };
-  }, [phase, stepPhase, step, resolve]);
+  }, [phase, mode, resolve]);
 
   // Feedback flash, then the next patch.
   useEffect(() => {
-    if (phase !== "run" || stepPhase !== "feedback") return;
-    const id = window.setTimeout(() => setStep((s) => s + 1), FEEDBACK_MS);
+    if (phase !== "run" || mode !== "feedback") return;
+    const id = window.setTimeout(next, FEEDBACK_MS);
     return () => window.clearTimeout(id);
-  }, [phase, stepPhase, step]);
+  }, [phase, mode, next]);
 
-  useEffect(() => {
-    if (!flash) return;
-    const id = window.setTimeout(() => setFlash(null), 400);
-    return () => window.clearTimeout(id);
-  }, [flash]);
-
+  // Retire the combo popup once its animation has played.
   useEffect(() => {
     if (!combo) return;
     const id = window.setTimeout(() => setCombo(null), COMBO_MS);
@@ -172,8 +182,7 @@ export function NBack({ onExit }: Props) {
     setScore(null);
     setFlash(null);
     setCombo(null);
-    setVisible(false);
-    setStepPhase("await");
+    setMode("watch");
     setStep(0);
     setPhase("run");
   }, []);
@@ -183,13 +192,11 @@ export function NBack({ onExit }: Props) {
     [t, score],
   );
 
-  const params = useMemo(
-    () =>
-      seq && visible && step >= 0 && step < seq.angles.length
-        ? patchParams(seq.angles[step]!, size)
-        : null,
-    [seq, visible, step, size],
-  );
+  const patch = useMemo(() => {
+    if (!seq || mode === "feedback") return null;
+    if (step < 0 || step >= seq.angles.length) return null;
+    return patchParams(seq.angles[step]!, size);
+  }, [seq, mode, step, size]);
 
   if (phase === "intro") {
     return (
@@ -220,18 +227,19 @@ export function NBack({ onExit }: Props) {
   }
 
   if (!seq) return null;
-  const pos = Math.min(Math.max(step - DEFAULT_NBACK.n + 1, 0), total);
-  const answering = stepPhase === "await";
+
+  const answering = mode === "await";
+  const progress = Math.min(Math.max(step - seq.n + 1, 0), total);
   const seconds = Math.max(1, Math.ceil(remainingMs / 1000));
 
   return (
     <div className="screen nback-screen">
       <div className="muted nback-hud">
-        <span>{t("nback.count", { n: pos, max: total })}</span>
+        <span>{t("nback.count", { n: progress, max: total })}</span>
       </div>
 
       <p className="nback-prompt">
-        {stepPhase === "watch" ? t("nback.watch") : t("nback.prompt")}
+        {mode === "watch" ? t("nback.watch") : t("nback.prompt")}
       </p>
 
       <div className="nback-stage">
@@ -239,7 +247,7 @@ export function NBack({ onExit }: Props) {
           className={`nback-patch${flash ? ` ${flash}` : ""}`}
           style={{ width: size, height: size }}
         >
-          {params && <GaborView params={params} size={size} />}
+          {patch && <GaborView params={patch} size={size} />}
           {answering && (
             <div className="nback-timer" aria-hidden="true">
               <svg viewBox="0 0 36 36" className="nback-timer-ring">
@@ -270,9 +278,7 @@ export function NBack({ onExit }: Props) {
             key={combo.id}
             className="nback-combo"
             aria-hidden="true"
-            style={{
-              fontSize: `${Math.min(2.4 + (combo.n - COMBO_MIN) * 0.5, 6)}rem`,
-            }}
+            style={{ fontSize: `${comboFontRem(combo.n)}rem` }}
           >
             {t("nback.combo", { n: combo.n })}
           </div>
